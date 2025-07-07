@@ -34,10 +34,10 @@ export const CollapsibleMessage: React.FC<CollapsibleMessageProps> = ({
   return (
     <div
       className={cn('border-l-4 pl-2 rounded', {
-        'border-[var(--vscode-charts-blue)]': part.role === 'assistant',
-        'border-[var(--vscode-charts-green)]': part.role === 'user',
-        'border-[var(--vscode-charts-gray)]': part.role === 'system',
-        'border-[var(--vscode-charts-yellow)]':
+        'border-chart-1': part.role === 'assistant',
+        'border-chart-2': part.role === 'user',
+        'border-chart-3': part.role === 'system',
+        'border-chart-4':
           part.role !== 'assistant' &&
           part.role !== 'user' &&
           part.role !== 'system',

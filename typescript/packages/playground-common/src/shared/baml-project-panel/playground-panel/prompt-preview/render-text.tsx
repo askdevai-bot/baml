@@ -24,10 +24,10 @@ const HighlightedText: React.FC<{
           <mark
             key={`${i}-${part.highlight}-${part.text.length}`}
             className={cn(
-              'inline whitespace-pre-wrap break-words rounded px-1 py-0.5 font-normal text-xs text-input',
+              'inline whitespace-pre-wrap break-words rounded px-1 py-0.5 font-normal text-xs text-primary-foreground',
               part.text.trim() === ''
-                ? 'bg-[var(--vscode-charts-red)]/30'
-                : 'bg-[var(--vscode-charts-blue)]/40',
+                ? 'bg-chart-5/30'
+                : 'bg-chart-1/40',
             )}
           >
             {part.text}
@@ -109,7 +109,7 @@ export const RenderPromptPart: React.FC<{
         </div>
         <pre
           className={cn(
-            'whitespace-pre-wrap text-xs leading-relaxed transition-all',
+            'whitespace-pre-wrap text-xs leading-relaxed transition-all text-primary-foreground',
           )}
         >
           {renderContent}

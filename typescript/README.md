@@ -35,7 +35,6 @@ pnpm build
 Available scripts in package.json:
 - `pnpm dev:vscode` - dev mode for VSCode extension
 - `pnpm dev:language-server` - dev mode for Language Server
-- `pnpm dev:all` - dev mode for all packages
 - `pnpm dev:playground` - Force rebuild the playground frontend
 
 ### VSCode Extension Development

@@ -307,7 +307,7 @@ export class WebviewPanelHost {
                         : ''
                     }
                 </div>
-                <!-- 
+                <!--
                   Sandbox permissions explained:
                   - allow-scripts: Required for JavaScript execution
                   - allow-forms: Required for form submissions
@@ -403,6 +403,11 @@ export class WebviewPanelHost {
                         '--vscode-terminal-ansiBrightMagenta': styles.getPropertyValue('--vscode-terminal-ansiBrightMagenta'),
                         '--vscode-terminal-ansiBrightCyan': styles.getPropertyValue('--vscode-terminal-ansiBrightCyan'),
                         '--vscode-terminal-ansiBrightWhite': styles.getPropertyValue('--vscode-terminal-ansiBrightWhite'),
+
+                        '--vscode-charts-blue': styles.getPropertyValue('--vscode-charts-blue'),
+                        '--vscode-charts-green': styles.getPropertyValue('--vscode-charts-green'),
+                        '--vscode-charts-gray': styles.getPropertyValue('--vscode-charts-gray'),
+                        '--vscode-charts-yellow': styles.getPropertyValue('--vscode-charts-yellow'),
                     };
                     iframe.contentWindow.postMessage({ type: 'vscode-theme', vars }, '*');
                 }

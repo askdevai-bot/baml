@@ -2,6 +2,8 @@
 
 First off, thanks for your interest in contributing to BAML! We appreciate all the help we can get in making it the best way to build any AI agents or applications.
 
+> **📚 For comprehensive development setup instructions, see our [Development Setup Guide](./README-DEV.md)**
+
 ## Table of Contents
 
 - [Contributing to BAML](#contributing-to-baml)

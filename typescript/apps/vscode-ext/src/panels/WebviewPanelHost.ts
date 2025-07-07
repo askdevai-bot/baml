@@ -167,15 +167,24 @@ export class WebviewPanelHost {
    * rendered within the webview panel
    */
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
-    // The CSS file from the React dist output
-    const stylesUri = getUri(webview, extensionUri, [
-      '..', '..', 'apps', 'playground', 'dist', 'assets', 'index.css',
-    ])
-    //ypescript/apps/playground/dist
-    // The JS file from the React dist output
-    const scriptUri = getUri(webview, extensionUri, [
-      '..', '..', 'apps', 'playground', 'dist', 'assets', 'index.js',
-    ])
+    const isDevelopment = process.env.VSCODE_DEBUG_MODE === 'true'
+
+    let stylesUri: string
+    let scriptUri: string
+
+    if (isDevelopment) {
+      // In development, load from Vite dev server
+      stylesUri = 'http://localhost:3030/src/main.css'
+      scriptUri = 'http://localhost:3030/src/main.tsx'
+    } else {
+      // In production, load from dist folder
+      stylesUri = getUri(webview, extensionUri, [
+        '..', '..', 'apps', 'playground', 'dist', 'assets', 'index.css',
+      ]).toString()
+      scriptUri = getUri(webview, extensionUri, [
+        '..', '..', 'apps', 'playground', 'dist', 'assets', 'index.js',
+      ]).toString()
+    }
 
     const nonce = getNonce()
 
@@ -186,12 +195,23 @@ export class WebviewPanelHost {
             <head>
               <meta charset="UTF-8" />
               <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-              <link rel="stylesheet" type="text/css" href="${stylesUri}">
-              <title>Hello World</title>
+              ${isDevelopment ? '' : `<link rel="stylesheet" type="text/css" href="${stylesUri}">`}
+              <title>BAML Playground</title>
             </head>
             <body>
-              <div id="root">Waiting for react: ${scriptUri}</div>
-              <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
+              <div id="root">Loading BAML Playground...</div>
+              ${isDevelopment
+                ? `<script type="module">
+                    import RefreshRuntime from 'http://localhost:3030/@react-refresh'
+                    RefreshRuntime.injectIntoGlobalHook(window)
+                    window.$RefreshReg$ = () => {}
+                    window.$RefreshSig$ = () => (type) => type
+                    window.__vite_plugin_react_preamble_installed__ = true
+                  </script>
+                  <script type="module" src="http://localhost:3030/@vite/client"></script>
+                  <script type="module" src="${scriptUri}"></script>`
+                : `<script type="module" nonce="${nonce}" src="${scriptUri}"></script>`
+              }
             </body>
           </html>`
   }

@@ -343,46 +343,36 @@ export const registerClientEventHandlers = (
     }
   });
 
-  client.onRequest(
-    'baml_settings_updated',
-    (config: typeof BAML_CONFIG_SINGLETON) => {
-      console.log('Received baml_settings_updated from LSP:', config);
-      BAML_CONFIG_SINGLETON.config = config.config;
-      BAML_CONFIG_SINGLETON.cliVersion = config.cliVersion;
-    },
-  );
+  client.onRequest('baml_settings_updated', (config: typeof BAML_CONFIG_SINGLETON) => {
+    console.log('Received baml_settings_updated from LSP:', config)
+    BAML_CONFIG_SINGLETON.config = config.config
+    BAML_CONFIG_SINGLETON.cliVersion = config.cliVersion
+    WebviewPanelHost.currentPanel?.postMessage('baml_settings_updated', BAML_CONFIG_SINGLETON)
+  })
 
-  const handleRuntimeUpdated = (params: {
-    root_path: string;
-    files: Record<string, string>;
-  }) => {
+  const handleRuntimeUpdated = (params: { root_path: string; files: Record<string, string> }) => {
     const activeEditor =
-      window.activeTextEditor ||
-      (window.visibleTextEditors.length > 0
-        ? window.visibleTextEditors[0]
-        : null);
+      window.activeTextEditor || (window.visibleTextEditors.length > 0 ? window.visibleTextEditors[0] : null)
     if (activeEditor) {
       try {
-        const currentFilePath = URI.parse(
-          activeEditor.document.uri.toString(),
-        ).fsPath;
-        const rootPathUri = URI.file(params.root_path).fsPath;
+        const currentFilePath = URI.parse(activeEditor.document.uri.toString()).fsPath
+        const rootPathUri = URI.file(params.root_path).fsPath
         if (currentFilePath.startsWith(rootPathUri)) {
-          console.log('Runtime updated for active editor');
+          console.log('Forwarding runtime_updated to WebviewPanelHost')
+          WebviewPanelHost.currentPanel?.postMessage('add_project', {
+            ...params,
+            root_path: URI.file(params.root_path).toString(),
+          })
         } else {
-          console.log(
-            'runtime_updated ignored: root path does not match active editor',
-            currentFilePath,
-            rootPathUri,
-          );
+          console.log('runtime_updated ignored: root path does not match active editor', currentFilePath, rootPathUri)
         }
       } catch (e) {
-        console.error('Error processing runtime_updated:', e);
+        console.error('Error processing runtime_updated:', e)
       }
     } else {
-      console.log('runtime_updated ignored: no active editor');
+      console.log('runtime_updated ignored: no active editor')
     }
-  };
+  }
 
   client.onRequest('runtime_updated', handleRuntimeUpdated);
   client.onNotification('runtime_updated', handleRuntimeUpdated);

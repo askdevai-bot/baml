@@ -77,27 +77,27 @@ const ErrorCount: React.FC = () => {
 
 export const isConnectedAtom = atom(true);
 
-const ConnectionStatus: React.FC = () => {
-  const isConnected = useAtomValue(isConnectedAtom);
+// const ConnectionStatus: React.FC = () => {
+//   const isConnected = useAtomValue(isConnectedAtom);
 
-  if (isConnected) return null;
+//   if (isConnected) return null;
 
-  return (
-    <div className="fixed top-0 left-0 right-0 bg-red-600 text-white p-2 flex items-center justify-between z-50">
-      <div className="flex items-center gap-2">
-        <XCircle size={16} />
-        <span>Disconnected from LSP server</span>
-      </div>
-      <button
-        onClick={() => window.location.reload()}
-        type="button"
-        className="px-3 py-1 bg-white text-red-600 rounded hover:bg-red-50 transition-colors"
-      >
-        Reconnect
-      </button>
-    </div>
-  );
-};
+//   return (
+//     <div className="fixed top-0 left-0 right-0 bg-red-600 text-white p-2 flex items-center justify-between z-50">
+//       <div className="flex items-center gap-2">
+//         <XCircle size={16} />
+//         <span>Disconnected from LSP server</span>
+//       </div>
+//       <button
+//         onClick={() => window.location.reload()}
+//         type="button"
+//         className="px-3 py-1 bg-white text-red-600 rounded hover:bg-red-50 transition-colors"
+//       >
+//         Reconnect
+//       </button>
+//     </div>
+//   );
+// };
 
 // We don't use ASTContext.provider because we should the default value of the context
 export const EventListener: React.FC = () => {
@@ -340,7 +340,7 @@ export const EventListener: React.FC = () => {
 
   return (
     <>
-      <ConnectionStatus />
+      {/* <ConnectionStatus /> */}
       <div className="flex absolute right-2 bottom-2 z-50 flex-row gap-2 text-xs bg-transparent">
         <div className="pr-4 whitespace-nowrap">
           {bamlCliVersion && `baml-cli ${bamlCliVersion}`}

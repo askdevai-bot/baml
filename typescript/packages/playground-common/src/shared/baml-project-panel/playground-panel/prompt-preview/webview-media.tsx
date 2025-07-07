@@ -38,7 +38,7 @@ export const WebviewMedia: React.FC<WebviewMediaProps> = ({
 
       switch (media.type) {
         case wasm.WasmChatMessagePartMediaType.File:
-          return media.content;
+          return `${media.content}`
         case wasm.WasmChatMessagePartMediaType.Url:
           return media.content;
         case wasm.WasmChatMessagePartMediaType.Error:

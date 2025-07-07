@@ -12,6 +12,7 @@ import {
   type SetProxySettingsRequest,
   decodeBuffer,
 } from './vscode-rpc';
+import type { WebviewApi } from 'vscode-webview'
 
 const RPC_TIMEOUT_MS = 5000;
 
@@ -41,6 +42,7 @@ const isRpcResponse = (eventData: unknown): eventData is RpcResponse => {
  * enabled by acquireVsCodeApi.
  */
 class VSCodeAPIWrapper {
+  private readonly vsCodeApi: WebviewApi<unknown> | undefined
   private ws: WebSocket | undefined;
   private wsReady: Promise<void> | undefined;
   private wsReadyResolve: (() => void) | undefined;
@@ -202,26 +204,59 @@ class VSCodeAPIWrapper {
     }
   }
 
-  public postMessage(message: unknown) {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify(message));
-    } else if (this.ws && this.wsReady) {
-      // biome-ignore lint/suspicious/noAssignInExpressions: dont' worry!
-      // biome-ignore lint/style/noNonNullAssertion: dont' worry!
-      this.wsReady.then(() => this.ws!.send(JSON.stringify(message)));
+    /**
+   * Post a message (i.e. send arbitrary data) to the owner of the webview.
+   *
+   * @remarks When running webview code inside a web browser, postMessage will instead
+   * log the given message to the console.
+   *
+   * @param message Abitrary data (must be JSON serializable) to send to the extension context.
+   */
+    public postMessage(message: unknown) {
+      if (this.vsCodeApi) {
+        this.vsCodeApi.postMessage(message)
+      } else {
+        window.postMessage(message)
+      }
+    }
+  
+    /**
+     * Get the persistent state stored for this webview.
+     *
+     * @remarks When running webview source code inside a web browser, getState will retrieve state
+     * from local storage (https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
+     *
+     * @return The current state or `undefined` if no state has been set.
+     */
+    public getState(): unknown | undefined {
+      if (this.vsCodeApi) {
+        return this.vsCodeApi.getState()
+      } else {
+        const state = localStorage.getItem('vscodeState')
+        return state ? JSON.parse(state) : undefined
+      }
+    }
+  
+    /**
+     * Set the persistent state stored for this webview.
+     *
+     * @remarks When running webview source code inside a web browser, setState will set the given
+     * state using local storage (https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
+     *
+     * @param newState New persisted state. This must be a JSON serializable object. Can be retrieved
+     * using {@link getState}.
+     *
+     * @return The new state.
+     */
+    public setState<T extends unknown | undefined>(newState: T): T {
+      if (this.vsCodeApi) {
+        return this.vsCodeApi.setState(newState)
+      } else {
+        localStorage.setItem('vscodeState', JSON.stringify(newState))
+        return newState
+      }
     }
   }
-
-  public getState(): unknown | undefined {
-    const state = localStorage.getItem('vscodeState');
-    return state ? JSON.parse(state) : undefined;
-  }
-
-  public setState<T extends unknown | undefined>(newState: T): T {
-    localStorage.setItem('vscodeState', JSON.stringify(newState));
-    return newState;
-  }
-}
-
-// Exports class singleton to prevent multiple invocations of acquireVsCodeApi.
-export const vscode = new VSCodeAPIWrapper();
+  
+  // Exports class singleton to prevent multiple invocations of acquireVsCodeApi.
+  export const vscode = new VSCodeAPIWrapper()

@@ -69,16 +69,21 @@ export const WebviewMedia: React.FC<WebviewMediaProps> = ({
   }
 
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget;
-    const { naturalWidth, naturalHeight } = img;
-    let size = 'Unknown';
-    const sizeInBytes = naturalWidth * naturalHeight * 4;
-    size =
-      sizeInBytes > 1048576
-        ? `${(sizeInBytes / 1048576).toFixed(2)} MB`
-        : `${(sizeInBytes / 1024).toFixed(2)} KB`;
-    setImageStats({ width: naturalWidth, height: naturalHeight, size });
-  };
+    const img = e.currentTarget
+    const { naturalWidth, naturalHeight } = img
+    let size = 'Unknown'
+    if (mediaUrl?.startsWith('data:')) {
+      const base64Length = mediaUrl.split(',')[1]?.length
+      const sizeInBytes = base64Length ? base64Length * 0.75 : 0
+      size =
+        sizeInBytes > 1048576 ? `${(sizeInBytes / 1048576).toFixed(2)} MB` : `${(sizeInBytes / 1024).toFixed(2)} KB`
+    } else {
+    const sizeInBytes = naturalWidth * naturalHeight * 4
+      size =
+        sizeInBytes > 1048576 ? `${(sizeInBytes / 1048576).toFixed(2)} MB` : `${(sizeInBytes / 1024).toFixed(2)} KB`
+    }
+    setImageStats({ width: naturalWidth, height: naturalHeight, size })
+  }
 
   return (
     <div className="w-full">

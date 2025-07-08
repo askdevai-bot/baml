@@ -29,9 +29,16 @@ import { ThemeToggle } from '../theme/ThemeToggle';
 import {
   areTestsRunningAtom,
   selectedItemAtom,
-  showEnvDialogAtom,
 } from './atoms';
 import { areEnvVarsMissingAtom } from './atoms';
+import { showApiKeyDialogAtom } from '../../../components/api-keys-dialog/atoms';
+import { proxyUrlAtom } from '../atoms';
+import {
+  type BamlConfigAtom,
+  bamlConfig,
+} from '../../../baml_wasm_web/bamlConfig';
+import { vscode } from '../vscode';
+import { toast } from '@baml/ui/sonner';
 import { FunctionTestName } from './function-test-name';
 import { renderedPromptAtom } from './prompt-preview/prompt-preview-content';
 import { isParallelTestsEnabledAtom } from './prompt-preview/test-panel/atoms';
@@ -77,9 +84,8 @@ const RunButton: React.FC<{ className?: string }> = ({ className }) => {
 export const isClientCallGraphEnabledAtom = atom(false);
 
 export function PreviewToolbar() {
-  const [displaySettings, setDisplaySettings] = useAtom(displaySettingsAtom);
   const selections = useAtomValue(selectedItemAtom);
-  const setShowEnvDialog = useSetAtom(showEnvDialogAtom);
+  const setShowApiKeyDialog = useSetAtom(showApiKeyDialogAtom);
 
   const options: {
     label: string;
@@ -88,14 +94,13 @@ export function PreviewToolbar() {
   }[] = [{ label: 'Token Counts', icon: BarChart2, value: 'tokens' }];
 
   const areEnvVarsMissing = useAtomValue(areEnvVarsMissingAtom);
-  const [isClientCallGraphEnabled, setIsClientCallGraphEnabled] = useAtom(
-    isClientCallGraphEnabledAtom,
-  );
   const renderedPrompt = useAtomValue(renderedPromptAtom);
   const [showCopied, setShowCopied] = React.useState(false);
   const [isParallelTestsEnabled, setIsParallelTestsEnabled] = useAtom(
     isParallelTestsEnabledAtom,
   );
+  const proxySettings = useAtomValue(proxyUrlAtom);
+  const setBamlConfig = useSetAtom(bamlConfig);
 
   const handleCopy = () => {
     if (!renderedPrompt) return;
@@ -175,16 +180,14 @@ export function PreviewToolbar() {
               <Button
                 variant="ghost"
                 size="xs"
-                className="flex gap-2 items-center text-muted-foreground/70 ml-auto"
-                onClick={() => setShowEnvDialog(true)}
+                className="flex gap-2 items-center text-muted-foreground/70 ml-auto relative"
+                onClick={() => setShowApiKeyDialog(true)}
               >
-                <div className="relative">
-                  <Key className="size-4" />
-                  {areEnvVarsMissing && (
-                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full" />
-                  )}
-                </div>
+                <Key className="size-4" />
                 <span className="text-sm hidden md:block">API Keys</span>
+                {areEnvVarsMissing && (
+                    <div className="absolute top-0 -right-1 w-2 h-2 bg-orange-500 rounded-full" />
+                  )}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -222,22 +225,56 @@ export function PreviewToolbar() {
               checked={isParallelTestsEnabled}
               onCheckedChange={setIsParallelTestsEnabled}
             >
-              <Split className="mr-2 size-4" />
               Enable Parallel Testing
             </DropdownMenuCheckboxItem>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel>Visualization</DropdownMenuLabel>
+            <DropdownMenuLabel>Network</DropdownMenuLabel>
             <DropdownMenuCheckboxItem
-              checked={isClientCallGraphEnabled}
-              onCheckedChange={setIsClientCallGraphEnabled}
+              checked={proxySettings.proxyEnabled}
+              onCheckedChange={async (checked) => {
+                try {
+                  await vscode.setProxySettings(!!checked);
+                  // Update local config to reflect the change immediately
+                  setBamlConfig((prev: BamlConfigAtom) => ({
+                    ...prev,
+                    config: {
+                      ...prev.config,
+                    },
+                  }));
+                } catch (error) {
+                  console.error('Failed to update proxy settings:', error);
+                  toast.error('Error updating proxy settings', {
+                    description: 'Please try again',
+                  });
+                }
+              }}
             >
-              <Workflow className="mr-2 w-4 h-4" />
-              LLM Client Call Graph
+              <TooltipProvider>
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <span>VSCode Proxy (CORS bypass)</span>
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="text-xs w-80">
+                    The BAML playground directly calls the LLM provider's API.
+                    Some providers make it difficult for browsers to call their
+                    API due to CORS restrictions.
+                    <br />
+                    <br />
+                    To get around this, the BAML VSCode extension includes a{' '}
+                    <b>localhost proxy</b> that sits between your browser and the
+                    LLM provider's API.
+                    <br />
+                    <br />
+                    <b>
+                      BAML MAKES NO NETWORK CALLS BEYOND THE LLM PROVIDER'S API
+                      YOU SPECIFY.
+                    </b>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
-        <SidebarTrigger className="flex gap-2 items-center text-muted-foreground/70 hover:text-foreground" />
 
         {!isVSCodeEnvironment && <ThemeToggle />}
       </div>

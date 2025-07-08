@@ -87,43 +87,43 @@
 @theme inline {
   --color-background: var(--vscode-editor-background, var(--background));
   --color-foreground: var(--vscode-editor-foreground, var(--foreground));
-  --color-card: var(--vscode-input-background, var(--card));
+  --color-card: var(--vscode-panel-background, var(--card));
   --color-card-foreground: var(
-    --vscode-input-foreground,
+    --vscode-panelTitle-activeForeground,
     var(--card-foreground)
   );
-  --color-popover: var(--vscode-input-background, var(--popover));
+  --color-popover: var(--vscode-editorWidget-background, var(--popover));
   --color-popover-foreground: var(
-    --vscode-input-foreground,
+    --vscode-editorWidget-foreground,
     var(--popover-foreground)
   );
-  --color-primary: var(--vscode-button-foreground, var(--primary));
+  --color-primary: var(--vscode-button-background, var(--primary));
   --color-primary-foreground: var(
-    --vscode-button-background,
+    --vscode-button-foreground,
     var(--primary-foreground)
   );
-  --color-secondary: var(--vscode-badge-background, var(--secondary));
+  --color-secondary: var(--vscode-button-secondaryBackground, var(--secondary));
   --color-secondary-foreground: var(
-    --vscode-badge-foreground,
+    --vscode-button-secondaryForeground,
     var(--secondary-foreground)
   );
-  --color-muted: var(--vscode-quickInput-background, var(--muted));
+  --color-muted: var(--vscode-dropdown-background, var(--muted));
   --color-muted-foreground: var(
-    --vscode-quickInput-foreground,
+    --vscode-descriptionForeground,
     var(--muted-foreground)
   );
-  --color-accent: var(--vscode-badge-background, var(--accent));
+  --color-accent: var(--vscode-sideBar-background, var(--accent));
   --color-accent-foreground: var(
-    --vscode-badge-foreground,
+    --vscode-list-activeSelectionForeground,
     var(--accent-foreground)
   );
   --color-destructive: var(--vscode-errorForeground, var(--destructive));
   --color-destructive-foreground: var(
-    --vscode-editor-background,
+    --vscode-button-foreground,
     var(--destructive-foreground)
   );
-  --color-border: var(--vscode-panel-border, var(--border));
-  --color-input: var(--vscode-input-foreground, var(--input));
+  --color-border: var(--vscode-input-border, var(--border));
+  --color-input: var(--vscode-input-background, var(--input));
   --color-ring: var(--vscode-focusBorder, var(--ring));
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -536,4 +536,8 @@ button.woot-elements--right:nth-child(2) {
 
 .text-blob {
   @apply text-lg p-5 bg-[#f0f0f0] rounded-lg;
+}
+
+input:focus {
+  @apply outline-none;
 }

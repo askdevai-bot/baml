@@ -19,7 +19,6 @@ function App() {
     <CustomErrorBoundary message="Error loading playground">
       {/* <DevTools /> */}
       <Suspense fallback={<div>Loading...</div>}>
-        <EventListener />
 
         <div className="relative min-h-screen bg-background text-foreground p-2">
           <ThemeProvider
@@ -29,6 +28,9 @@ function App() {
             disableTransitionOnChange={true}
           >
             <PromptPreview />
+            <div className="absolute bottom-0 right-4 z-50">
+              <EventListener />
+            </div>
           </ThemeProvider>
         </div>
 

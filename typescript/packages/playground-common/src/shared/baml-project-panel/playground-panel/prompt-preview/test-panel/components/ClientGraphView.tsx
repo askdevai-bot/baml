@@ -37,7 +37,6 @@ const ClientHeader: React.FC = () => {
   const currentClient = clientsArray[orchIndex]
   return (
     <div className='pt-4'>
-      <div className='text-sm font-bold'>LLM Client Call Graph</div>
       <div className='flex flex-col-reverse items-start gap-0.5'>
         <span className='pl-2 text-xs text-muted-foreground flex flex-row flex-wrap items-center gap-0.5'>
           {clientsArray.length > 1 && `Attempt ${orchIndex} in Client Graph`}
@@ -119,7 +118,7 @@ export const ClientGraphView: React.FC = () => {
   }
 
   return (
-    <div className='flex flex-col w-full h-full'>
+    <div className='flex flex-col w-full h-[400px]'>
       <ClientHeader />
       <div className='h-full'>
         <ReactFlow

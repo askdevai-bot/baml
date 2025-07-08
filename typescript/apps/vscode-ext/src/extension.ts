@@ -256,7 +256,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Add cursor movement listener
   vscode.window.onDidChangeTextEditorSelection((event) => {
-    const position = event.selections[0].active
+    const position = event.selections[0]?.active
 
     const editor = vscode.window.activeTextEditor
 
@@ -270,8 +270,8 @@ export function activate(context: vscode.ExtensionContext) {
           cursor: {
             fileName: name,
             fileText: text,
-            line: position.line + 1,
-            column: position.character,
+            line: position?.line ?? 0 + 1,
+            column: position?.character ?? 0,
           },
         })
       }

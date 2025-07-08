@@ -2,7 +2,6 @@
   "name": "@baml/playground-common",
   "version": "1.0.12",
   "description": "",
-  "keywords": [],
   "packageManager": "pnpm@9.12.0",
   "author": "",
   "license": "ISC",
@@ -17,12 +16,6 @@
   "exports": {
     ".": "./src/index.ts",
     "./*": ["./src/*.ts", "./src/*.tsx", "./src/*/index.ts"]
-  },
-  "files": ["src"],
-  "typesVersions": {
-    "*": {
-      "*": ["src/*", "src/*/index"]
-    }
   },
   "engines": {
     "vscode": ">=1.63.0"

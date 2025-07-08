@@ -10,3 +10,4 @@ export { JotaiProvider } from './baml_wasm_web/JotaiProvider';
 // export { default as lint, type LinterSourceFile, type LinterError, type LinterInput } from "./wasm/lint";
 export * from './shared/baml-project-panel';
 export * from './lib/feedback_widget';
+export * from './components';

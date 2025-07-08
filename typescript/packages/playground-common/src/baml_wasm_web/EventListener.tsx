@@ -19,6 +19,8 @@ import { CheckCircle } from 'lucide-react';
 import { useEffect } from 'react';
 import { vscodeLocalStorageStore } from './JotaiProvider';
 import { type BamlConfigAtom, bamlConfig } from './bamlConfig';
+import { ErrorWarningDialog } from '../components/ErrorWarningDialog';
+import { useState } from 'react';
 
 export const hasClosedEnvVarsDialogAtom = atomWithStorage<boolean>(
   'has-closed-env-vars-dialog',
@@ -52,7 +54,7 @@ export const numErrorsAtom = atom((get) => {
   return { errors: errors.length - warningCount, warnings: warningCount };
 });
 
-const ErrorCount: React.FC = () => {
+const ErrorCount: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
   const { errors, warnings } = useAtomValue(numErrorsAtom);
   if (errors === 0 && warnings === 0) {
     return (
@@ -63,15 +65,25 @@ const ErrorCount: React.FC = () => {
   }
   if (errors === 0) {
     return (
-      <div className="flex flex-row gap-1 items-center text-yellow-600">
+      <button
+        type="button"
+        onClick={onClick}
+        className="flex flex-row gap-1 items-center text-yellow-600 hover:underline focus:outline-none"
+        title="Show warnings"
+      >
         {warnings} <AlertTriangle size={12} />
-      </div>
+      </button>
     );
   }
   return (
-    <div className="flex flex-row gap-1 items-center text-red-600">
-      {errors} <XCircle size={12} /> {warnings} <AlertTriangle size={12} />{' '}
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex flex-row gap-1 items-center text-red-600 hover:underline focus:outline-none"
+      title="Show errors and warnings"
+    >
+      {errors} <XCircle size={12} /> {warnings} <AlertTriangle size={12} />
+    </button>
   );
 };
 
@@ -100,7 +112,7 @@ export const isConnectedAtom = atom(true);
 // }
 
 // We don't use ASTContext.provider because we should the default value of the context
-export const EventListener: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const EventListener: React.FC = () => {
   const updateCursor = useSetAtom(updateCursorAtom)
   const setFiles = useSetAtom(filesAtom)
   const debouncedSetFiles = useDebounceCallback(setFiles, 50, true)
@@ -315,16 +327,17 @@ export const EventListener: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [selectedFunc, runBamlTests, updateCursor]);
 
   const version = useAtomValue(versionAtom);
+  const [showDialog, setShowDialog] = useState(false);
 
   return (
     <>
       {/* <ConnectionStatus /> */}
-      {children}
-      <div className="flex absolute right-2 bottom-2 z-50 flex-row gap-2 text-xs bg-transparent">
+      <div className="flex flex-row gap-2 text-xs bg-transparent items-center">
         <div className="pr-4 whitespace-nowrap">
           {bamlCliVersion && `baml-cli ${bamlCliVersion}`}
         </div>
-        <ErrorCount />{' '}
+        <ErrorCount onClick={() => setShowDialog(true)} />
+        <ErrorWarningDialog open={showDialog} onOpenChange={setShowDialog} />
         <span className="text-muted-foreground text-[10px]">
           VSCode Runtime Version: {version}
         </span>

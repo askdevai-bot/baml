@@ -5,7 +5,6 @@ export enum TestPanelViewType {
   TABULAR = 'tabular',
   CARD_EXPANDED = 'card_expanded',
   CARD_SIMPLE = 'card_simple',
-  CLIENT_GRAPH = 'client_graph',
 }
 
 export type ResponseViewType = 'parsed' | 'pretty' | 'raw'

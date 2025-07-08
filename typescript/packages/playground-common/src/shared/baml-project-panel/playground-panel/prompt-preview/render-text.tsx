@@ -103,10 +103,7 @@ export const RenderPromptPart: React.FC<{
 
   return (
     <div className="flex flex-col">
-      <div className="relative px-3 pb-3 pt-2 bg-card group max-h-[600px] overflow-y-auto overflow-x-hidden">
-        <div className="absolute right-2 top-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-          <CopyButton text={text} size="sm" variant="secondary" />
-        </div>
+      <div className="px-3 pb-3 pt-2 bg-accent group max-h-[600px] overflow-y-auto overflow-x-hidden">
         <pre
           className={cn(
             'whitespace-pre-wrap text-xs leading-relaxed transition-all text-primary-foreground',

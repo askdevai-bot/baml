@@ -13,6 +13,13 @@ import {
   decodeBuffer,
 } from './vscode-rpc';
 
+// Define WebviewApi type for VSCode webview context
+interface WebviewApi<T> {
+  postMessage(message: any): void;
+  getState(): T | undefined;
+  setState<U extends T>(newState: U): U;
+}
+
 // Declare the global acquireVsCodeApi function provided by VSCode webviews
 declare global {
   function acquireVsCodeApi(): any

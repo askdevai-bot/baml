@@ -7,7 +7,7 @@
 		"build": "cargo build --workspace",
     "typecheck": "cargo check --workspace",
 		"release": "cargo build --release --workspace",
-		"dev": "cargo watch -x 'check --workspace' -x 'test --workspace --lib'",
+		"dev": "cargo build --workspace",
 		"format": "cargo fmt --workspace",
     "format:check": "cargo fmt --check --workspace",
     "format:fix": "cargo fmt --workspace",

@@ -1,8 +1,8 @@
-import { FastForward, History, RefreshCw, Rocket } from 'lucide-react'
+import { History, RefreshCw } from 'lucide-react'
 
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useAtomValue } from 'jotai'
 import { useAtom } from 'jotai'
-import { isParallelTestsEnabledAtom, selectedHistoryIndexAtom, testHistoryAtom, TestHistoryEntry } from '../atoms'
+import {  selectedHistoryIndexAtom, testHistoryAtom, TestHistoryEntry } from '../atoms'
 import { useRunBamlTests } from '../test-runner'
 import { ViewSelector } from './ViewSelector'
 import { Tooltip, TooltipTrigger } from '@baml/ui/tooltip'
@@ -10,7 +10,6 @@ import { TooltipContent, TooltipProvider } from '@baml/ui/tooltip'
 import { Button } from '@baml/ui/button'
 import { Play } from 'lucide-react'
 import { getStatus } from '../testStateUtils'
-import { cn } from '@baml/ui/lib/utils'
 
 const getHistoryButtonColor = (tests: TestHistoryEntry[], isSelected: boolean) => {
   const baseClasses = isSelected
@@ -79,7 +78,6 @@ export const TestMenu = () => {
   if (testHistory.length === 0) {
     return (
       <div className='flex justify-end items-center pr-2 mb-3 space-x-2'>
-        <ParallelTestsToggle />
         <ViewSelector />
       </div>
     )
@@ -88,7 +86,6 @@ export const TestMenu = () => {
   if (!currentRun)
     return (
       <div className='flex justify-end items-center pr-2 mb-3 space-x-2'>
-        <ParallelTestsToggle />
         <ViewSelector />
       </div>
     )
@@ -117,7 +114,6 @@ export const TestMenu = () => {
         </div>
       </div>
       <div className='flex gap-2 items-center'>
-        <ParallelTestsToggle />
         <TooltipProvider>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
@@ -179,31 +175,5 @@ export const TestMenu = () => {
         <ViewSelector />
       </div>
     </div>
-  )
-}
-
-const ParallelTestsToggle = () => {
-  const [isParallelTestsEnabled, setIsParallelTestsEnabled] = useAtom(isParallelTestsEnabledAtom)
-
-  return (
-    <TooltipProvider delayDuration={0}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant='ghost'
-            size='sm'
-            className={cn(
-              isParallelTestsEnabled ? 'text-purple-500 bg-muted hover:text-purple-500' : 'hover:text-purple-500',
-            )}
-            onClick={() => setIsParallelTestsEnabled(!isParallelTestsEnabled)}
-          >
-            <Rocket className='w-4 h-4' />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{isParallelTestsEnabled ? 'Disable parallel testing' : 'Enable parallel testing'}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
   )
 }

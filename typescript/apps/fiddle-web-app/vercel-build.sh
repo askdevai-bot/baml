@@ -3,7 +3,7 @@ set -x
 set -e
 
 # Skip Rust installation in setup-dev.sh since we handled it above
-bash ../../../scripts/setup-dev.sh --skip-pnpm --skip-cargo-watch --skip-go
+bash ../../../scripts/setup-dev.sh --skip-pnpm --skip-cargo-watch --skip-go --skip-ruby
 
 # Try to source cargo environment from multiple possible locations
 if [ -f "$HOME/.cargo/env" ]; then

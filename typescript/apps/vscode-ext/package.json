@@ -166,6 +166,7 @@
     "@baml/common": "workspace:*",
     "@baml/cli": "workspace:*",
     "@baml/ui": "workspace:*",
+    "@baml/playground": "workspace:*",
     "@smithy/types": "4.3.1",
     "adm-zip": "0.5.16",
     "allotment": "1.20.4",

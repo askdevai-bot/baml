@@ -167,16 +167,18 @@ export class WebviewPanelHost {
    * rendered within the webview panel
    */
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
-    // Change this if you want hot-reload.
-    const isDevelopment = false; // process.env.VSCODE_DEBUG_MODE === 'true'
+    // Development mode enables hot-reload from Vite dev server
+    const isDevelopment = process.env.VSCODE_DEBUG_MODE === 'true'
+    // Port 3030 is used in debug mode, 5173 is the default Vite port
+    const port = isDevelopment ? 3030 : 5173;
 
     let stylesUri: string
     let scriptUri: string
 
     if (isDevelopment) {
       // In development, load from Vite dev server
-      stylesUri = 'http://localhost:3030/src/main.css'
-      scriptUri = 'http://localhost:3030/src/main.tsx'
+      stylesUri = `http://localhost:${port}/src/main.css`
+      scriptUri = `http://localhost:${port}/src/main.tsx`
     } else {
       // In production, load from dist folder
       stylesUri = getUri(webview, extensionUri, [
@@ -194,8 +196,15 @@ export class WebviewPanelHost {
           <!DOCTYPE html>
           <html lang="en">
             <head>
-              <meta charset="UTF-8" />
+                            <meta charset="UTF-8" />
               <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+              <!-- Content Security Policy:
+                   - Development: Allows Vite dev server on specific port + playground server on any localhost port
+                   - Production: Restricts to webview source + playground server on any localhost port -->
+              <meta http-equiv="Content-Security-Policy" content="${isDevelopment
+                ? `default-src 'none'; style-src 'unsafe-inline' http://localhost:${port}; script-src 'nonce-${nonce}' 'unsafe-eval' http://localhost:${port}; connect-src http://localhost:${port} ws://localhost:${port} http://localhost:* ws://localhost:*; img-src ${webview.cspSource} https: data:; font-src ${webview.cspSource};`
+                : `default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; connect-src http://localhost:* ws://localhost:*; img-src ${webview.cspSource} https: data:; font-src ${webview.cspSource};`
+              }">
               ${isDevelopment ? '' : `<link rel="stylesheet" type="text/css" href="${stylesUri}">`}
               <title>BAML Playground</title>
             </head>
@@ -203,13 +212,13 @@ export class WebviewPanelHost {
               <div id="root">Loading BAML Playground...</div>
               ${isDevelopment
                 ? `<script type="module">
-                    import RefreshRuntime from 'http://localhost:3030/@react-refresh'
+                    import RefreshRuntime from 'http://localhost:${port}/@react-refresh'
                     RefreshRuntime.injectIntoGlobalHook(window)
                     window.$RefreshReg$ = () => {}
                     window.$RefreshSig$ = () => (type) => type
                     window.__vite_plugin_react_preamble_installed__ = true
                   </script>
-                  <script type="module" src="http://localhost:3030/@vite/client"></script>
+                  <script type="module" src="http://localhost:${port}/@vite/client"></script>
                   <script type="module" src="${scriptUri}"></script>`
                 : `<script type="module" nonce="${nonce}" src="${scriptUri}"></script>`
               }

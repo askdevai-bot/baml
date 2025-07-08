@@ -115,7 +115,7 @@ export class WebviewPanelHost {
           localResourceRoots: [
             ...(vscode.workspace.workspaceFolders ?? []).map((f) => f.uri),
             Uri.joinPath(extensionUri, 'out'),
-            Uri.joinPath(extensionUri, 'web-panel/dist'),
+            Uri.joinPath(extensionUri, "dist/playground"),
           ],
           retainContextWhenHidden: true,
           enableCommandUris: true,
@@ -179,10 +179,10 @@ export class WebviewPanelHost {
     } else {
       // In production, load from dist folder
       stylesUri = getUri(webview, extensionUri, [
-        '..', '..', 'apps', 'playground', 'dist', 'assets', 'index.css',
+        'dist', 'playground', 'dist', 'assets', 'index.css',
       ]).toString()
       scriptUri = getUri(webview, extensionUri, [
-        '..', '..', 'apps', 'playground', 'dist', 'assets', 'index.js',
+        'dist', 'playground', 'dist', 'assets', 'index.js',
       ]).toString()
     }
 

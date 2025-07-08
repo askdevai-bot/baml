@@ -13,9 +13,5 @@
     "copy:release": "mkdir -p dist && cp ../target/release/baml-cli dist/baml-cli",
     "build": "cargo build && pnpm run copy:debug",
     "release": "cargo build --release && pnpm run copy:release"
-  },
-  "dependencies": {
-    "@boundaryml/baml": "workspace:*",
-    "@baml/language-server": "workspace:*"
   }
 }

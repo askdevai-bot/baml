@@ -211,15 +211,15 @@ export class WebviewPanelHost {
             <body>
               <div id="root">Loading BAML Playground...</div>
               ${isDevelopment
-                ? `<script type="module">
+                ? `<script type="module" nonce="${nonce}">
                     import RefreshRuntime from 'http://localhost:${port}/@react-refresh'
                     RefreshRuntime.injectIntoGlobalHook(window)
                     window.$RefreshReg$ = () => {}
                     window.$RefreshSig$ = () => (type) => type
                     window.__vite_plugin_react_preamble_installed__ = true
                   </script>
-                  <script type="module" src="http://localhost:${port}/@vite/client"></script>
-                  <script type="module" src="${scriptUri}"></script>`
+                  <script type="module" nonce="${nonce}" src="http://localhost:${port}/@vite/client"></script>
+                  <script type="module" nonce="${nonce}" src="${scriptUri}"></script>`
                 : `<script type="module" nonce="${nonce}" src="${scriptUri}"></script>`
               }
             </body>

@@ -9,6 +9,7 @@ import type {
 } from '@gloo-ai/baml-schema-wasm-web';
 import { atomFamily, atomWithStorage } from 'jotai/utils';
 import { vscodeLocalStorageStore } from '../Jotai';
+import { vscode } from '../vscode';
 
 export const runtimeStateAtom: Atom<{
   functions: WasmFunction[];
@@ -179,34 +180,41 @@ const envDialogOpenAtom = atom(false);
 
 export const showEnvDialogAtom = atom(
   (get) => {
-    const envDialogOpen = get(envDialogOpenAtom);
-    if (envDialogOpen) return true;
+    const envDialogOpen = get(envDialogOpenAtom)
+    if (envDialogOpen) return true
 
-    const requiredVars = get(requiredEnvVarsAtom);
-    const envVars = get(envVarsAtom);
+    const requiredVars = get(requiredEnvVarsAtom)
+    const envVars = get(envVarsAtom)
 
     // Check if ALL required vars are missing
     const hasMissingVars =
-      requiredVars.length > 0 && requiredVars.every((key) => !envVars[key]);
+      requiredVars.length > 0 && requiredVars.every((key) => !envVars[key])
 
-    const hasShownDialog = get(hasShownEnvDialogAtom);
-    if (hasShownDialog) return envDialogOpen;
+    const hasShownDialog = get(hasShownEnvDialogAtom)
+    if (hasShownDialog) return envDialogOpen
 
-    return hasMissingVars;
+    // if we are in vscode, we don't want to show the dialog
+    if (!vscode.isVscode()) {
+      return false
+    }
+
+    return hasMissingVars
   },
   (get, set, value: boolean) => {
     if (!value) {
-      set(hasShownEnvDialogAtom, true);
+      set(hasShownEnvDialogAtom, true)
     }
-    set(envDialogOpenAtom, value);
+    set(envDialogOpenAtom, value)
   },
-);
+)
 
 export const areEnvVarsMissingAtom = atom((get) => {
-  const requiredVars = get(requiredEnvVarsAtom);
-  const envVars = get(envVarsAtom);
-  return requiredVars.length > 0 && requiredVars.every((key) => !envVars[key]);
-});
+  const requiredVars = get(requiredEnvVarsAtom)
+  const isVscode = vscode.isVscode()
+  if (!isVscode) return false
+  const envVars = get(envVarsAtom)
+  return requiredVars.length > 0 && requiredVars.every((key) => !envVars[key])
+})
 
 export type TestStatusType = 'queued' | 'running' | 'done' | 'error' | 'idle';
 export type DoneTestStatusType =

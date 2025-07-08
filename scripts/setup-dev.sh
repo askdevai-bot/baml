@@ -226,28 +226,56 @@ fi
 
 # Check if Ruby is installed via rbenv
 if [ "$SKIP_RUBY" = false ]; then
-    # Install rbenv if not already installed
+    # Check if rbenv is already in PATH or if ~/.rbenv exists
     if ! command -v rbenv &> /dev/null; then
-        echo -e "${YELLOW}📦 Installing rbenv...${NC}"
+        if [ -d "$HOME/.rbenv" ]; then
+            echo -e "${YELLOW}📦 rbenv directory exists but not in PATH. Adding to PATH...${NC}"
+            
+            # Add rbenv to PATH
+            if ! grep -q 'export PATH="$HOME/.rbenv/bin:$PATH"' ~/.bashrc 2>/dev/null; then
+                echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+            fi
+            if ! grep -q 'eval "$(rbenv init -)"' ~/.bashrc 2>/dev/null; then
+                echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+            fi
 
-        # Clone rbenv repository
-        git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+            # Also add to .zshrc if it exists
+            if [ -f ~/.zshrc ]; then
+                if ! grep -q 'export PATH="$HOME/.rbenv/bin:$PATH"' ~/.zshrc 2>/dev/null; then
+                    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
+                fi
+                if ! grep -q 'eval "$(rbenv init -)"' ~/.zshrc 2>/dev/null; then
+                    echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+                fi
+            fi
 
-        # Add rbenv to PATH
-        echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
-        echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+            # Source rbenv for current session
+            export PATH="$HOME/.rbenv/bin:$PATH"
+            eval "$(rbenv init -)" 2>/dev/null || true
 
-        # Also add to .zshrc if it exists
-        if [ -f ~/.zshrc ]; then
-            echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
-            echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+            echo -e "${GREEN}✅ rbenv added to PATH${NC}"
+        else
+            echo -e "${YELLOW}📦 Installing rbenv...${NC}"
+
+            # Clone rbenv repository
+            git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+
+            # Add rbenv to PATH
+            echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+            echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+
+            # Also add to .zshrc if it exists
+            if [ -f ~/.zshrc ]; then
+                echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
+                echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+            fi
+
+            # Source rbenv for current session
+            export PATH="$HOME/.rbenv/bin:$PATH"
+            eval "$(rbenv init -)"
+
+            echo -e "${GREEN}✅ rbenv installed successfully${NC}"
         fi
-
-        # Source rbenv for current session
-        export PATH="$HOME/.rbenv/bin:$PATH"
-        eval "$(rbenv init -)"
-
-        echo -e "${GREEN}✅ rbenv installed successfully${NC}"
     else
         echo -e "${GREEN}✅ rbenv already installed${NC}"
     fi
@@ -261,35 +289,63 @@ if [ "$SKIP_RUBY" = false ]; then
         echo -e "${GREEN}✅ ruby-build plugin already installed${NC}"
     fi
 
+    # Check if libyaml is installed (required for psych extension)
+    if command -v brew &> /dev/null; then
+        if ! brew list libyaml &> /dev/null; then
+            echo -e "${YELLOW}📦 Installing libyaml (required for Ruby psych extension)...${NC}"
+            brew install libyaml
+            echo -e "${GREEN}✅ libyaml installed${NC}"
+        else
+            echo -e "${GREEN}✅ libyaml already installed${NC}"
+        fi
+    else
+        echo -e "${YELLOW}⚠️  Homebrew not found. Please install libyaml manually for Ruby psych extension.${NC}"
+    fi
+
     # Check if Ruby 3.2.2 is installed
-    if ! rbenv versions | grep -q "3.2.2"; then
+    if ! rbenv versions 2>/dev/null | grep -q "3.2.2"; then
         echo -e "${YELLOW}📦 Installing Ruby 3.2.2...${NC}"
+        
+        # Set environment variables for Ruby build
+        export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@3)"
+        export RUBY_CFLAGS="-Wno-error=implicit-function-declaration"
+        
         rbenv install 3.2.2
-        echo -e "${GREEN}✅ Ruby 3.2.2 installed successfully${NC}"
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}✅ Ruby 3.2.2 installed successfully${NC}"
+        else
+            echo -e "${YELLOW}⚠️  Ruby 3.2.2 installation failed. You may need to install additional dependencies.${NC}"
+            echo -e "${YELLOW}   Try: brew install openssl@3 readline libyaml${NC}"
+        fi
     else
         echo -e "${GREEN}✅ Ruby 3.2.2 already installed${NC}"
     fi
 
     # Set Ruby 3.2.2 as global version
-    echo -e "${YELLOW}📦 Setting Ruby 3.2.2 as global version...${NC}"
-    rbenv global 3.2.2
-
-    # Verify Ruby installation
-    RUBY_VERSION=$(ruby -v 2>/dev/null | cut -d' ' -f2 || echo "not installed")
-    if [[ "$RUBY_VERSION" == "3.2.2"* ]]; then
-        echo -e "${GREEN}✅ Ruby 3.2.2 is active${NC}"
-    else
-        echo -e "${YELLOW}⚠️  Ruby version is $RUBY_VERSION, expected 3.2.2. You may need to restart your shell.${NC}"
-    fi
-
-    # Install bundler if not already installed
-    if ! gem list bundler -i &> /dev/null; then
-        echo -e "${YELLOW}📦 Installing bundler...${NC}"
-        gem install bundler
+    if rbenv versions 2>/dev/null | grep -q "3.2.2"; then
+        echo -e "${YELLOW}📦 Setting Ruby 3.2.2 as global version...${NC}"
+        rbenv global 3.2.2
         rbenv rehash
-        echo -e "${GREEN}✅ bundler installed${NC}"
+
+        # Verify Ruby installation
+        RUBY_VERSION=$(ruby -v 2>/dev/null | cut -d' ' -f2 || echo "not installed")
+        if [[ "$RUBY_VERSION" == "3.2.2"* ]]; then
+            echo -e "${GREEN}✅ Ruby 3.2.2 is active${NC}"
+        else
+            echo -e "${YELLOW}⚠️  Ruby version is $RUBY_VERSION, expected 3.2.2. You may need to restart your shell.${NC}"
+        fi
+
+        # Install bundler if not already installed
+        if ! gem list bundler -i &> /dev/null; then
+            echo -e "${YELLOW}📦 Installing bundler...${NC}"
+            gem install bundler
+            rbenv rehash
+            echo -e "${GREEN}✅ bundler installed${NC}"
+        else
+            echo -e "${GREEN}✅ bundler already installed${NC}"
+        fi
     else
-        echo -e "${GREEN}✅ bundler already installed${NC}"
+        echo -e "${YELLOW}⚠️  Ruby 3.2.2 is not available. Skipping bundler installation.${NC}"
     fi
 else
     echo -e "${YELLOW}⏭️  Skipping Ruby installation${NC}"

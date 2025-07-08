@@ -78,6 +78,7 @@ export class WebviewPanelHost {
     // the panel or when the panel is closed programmatically)
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables)
 
+    console.log('extensionUri', extensionUri)
     // Set the HTML content for the webview panel
     this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri)
 
@@ -188,6 +189,9 @@ export class WebviewPanelHost {
         'dist', 'playground', 'dist', 'assets', 'index.js',
       ]).toString()
     }
+
+    console.log('stylesUri', stylesUri)
+    console.log('scriptUri', scriptUri)
 
     const nonce = getNonce()
 

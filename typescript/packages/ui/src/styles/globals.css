@@ -99,7 +99,7 @@
   );
   --color-primary: var(--vscode-button-background, var(--primary));
   --color-primary-foreground: var(
-    --vscode-button-foreground,
+    --vscode-foreground,
     var(--primary-foreground)
   );
   --color-secondary: var(--vscode-button-secondaryBackground, var(--secondary));
@@ -123,7 +123,7 @@
     var(--destructive-foreground)
   );
   --color-border: var(--vscode-input-border, var(--border));
-  --color-input: var(--vscode-input-background, var(--input));
+  --color-input: var(--vscode-input-border, var(--input));
   --color-ring: var(--vscode-focusBorder, var(--ring));
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -538,6 +538,6 @@ button.woot-elements--right:nth-child(2) {
   @apply text-lg p-5 bg-[#f0f0f0] rounded-lg;
 }
 
-input:focus {
-  @apply outline-none;
-}
+/* input:focus { */
+  /* @apply outline-none; */
+/* } */

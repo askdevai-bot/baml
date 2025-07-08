@@ -118,7 +118,7 @@ export const FunctionTestName: React.FC<FunctionTestNameProps> = ({
               </PopoverTrigger>
               <PopoverContent className="min-w-fit p-0">
                 <Command>
-                  <CommandInput placeholder="Search functions..." />
+                  <CommandInput placeholder="Search functions..." className="!outline-none focus:!outline-none" />
                   <CommandList>
                     <CommandEmpty>No function found.</CommandEmpty>
                     <CommandGroup>
@@ -187,7 +187,7 @@ export const FunctionTestName: React.FC<FunctionTestNameProps> = ({
               </PopoverTrigger>
               <PopoverContent className="min-w-fit p-0">
                 <Command>
-                  <CommandInput placeholder="Search tests..." />
+                  <CommandInput placeholder="Search tests..." className="!outline-none focus:!outline-none" />
                   <CommandList>
                     <CommandEmpty>No test found.</CommandEmpty>
                     <CommandGroup>

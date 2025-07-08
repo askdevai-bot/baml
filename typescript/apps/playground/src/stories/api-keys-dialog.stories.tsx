@@ -31,7 +31,7 @@ const WrappedEnvVars: React.FC = () => {
         disableTransitionOnChange={true}
       >
         <div className="flex gap-8 items-start">
-          <ApiKeysDialog showDialog={true} setShowDialog={() => {}} />
+          <ApiKeysDialog />
           <div className="p-4 bg-[#1e1e1e] rounded-lg min-w-[300px]">
             <h3 className="mb-2 text-sm font-mono">envVars</h3>
             <pre className="text-xs">{JSON.stringify(apiKeys, null, 2)}</pre>
@@ -171,10 +171,7 @@ export const TableWith100EnvVarsInDialog = {
           ),
         }}
       >
-        <ApiKeysDialog
-          showDialog={true}
-          setShowDialog={() => {}}
-        />
+        <ApiKeysDialog />
       </JotaiStorybookProvider>
     ),
   ],
@@ -191,10 +188,7 @@ export const VeryLongEnvVarNameInDialog = {
           OPENAI_API_KEY: 'sk-test123',
         }}
       >
-        <ApiKeysDialog
-          showDialog={true}
-          setShowDialog={() => {}}
-        />
+        <ApiKeysDialog />
       </JotaiStorybookProvider>
     ),
   ],

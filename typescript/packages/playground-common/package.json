@@ -12,10 +12,14 @@
     "clean": "git clean -xdf .turbo node_modules dist",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./*": ["./src/*.ts", "./src/*.tsx", "./src/*/index.ts"]
+    "./*": ["./src/*.ts", "./src/*.tsx", "./src/*/index.ts", "./src/*/index.tsx"],
+    "./custom-error-boundary": "./src/utils/ErrorFallback.tsx",
+    "./jotai-provider": "./src/baml_wasm_web/JotaiProvider.tsx",
+    "./event-listener": "./src/baml_wasm_web/EventListener.tsx",
+    "./prompt-preview": "./src/shared/baml-project-panel/playground-panel/prompt-preview/index.tsx",
+    "./codemirror-viewer": "./src/shared/baml-project-panel/codemirror-panel/code-mirror-viewer.tsx"
   },
   "engines": {
     "vscode": ">=1.63.0"

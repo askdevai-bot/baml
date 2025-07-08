@@ -5,7 +5,6 @@
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
     "rootDir": ".",
     "outDir": "dist",
-    "noEmit": false,
     "types": ["vscode"]
   },
   "include": ["src"],

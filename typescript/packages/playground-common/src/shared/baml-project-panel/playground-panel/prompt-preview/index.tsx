@@ -1,5 +1,4 @@
 'use client';
-import { SidebarInset, SidebarProvider } from '@baml/ui/sidebar';
 import { PreviewToolbar } from '../preview-toolbar';
 import { ApiKeysDialog } from '../../../../components/api-keys-dialog/dialog';
 import { PromptRenderWrapper } from './prompt-render-wrapper';

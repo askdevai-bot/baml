@@ -10,7 +10,8 @@ import {
 import { AlertTriangle, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { escapeValue, unescapeValue, REQUIRED_ENV_VAR_UNSET_WARNING } from './utils';
 import type { ApiKeyEntry } from './atoms';
-import { useApiKeysState } from './use-api-keys-state';
+import { useSetAtom } from 'jotai';
+import { updateApiKeyAtom, deleteApiKeyAtom, apiKeyVisibilityAtom } from './atoms';
 
 interface ApiKeyListItemProps {
   apiKey: ApiKeyEntry;
@@ -19,14 +20,22 @@ interface ApiKeyListItemProps {
 export const ApiKeyListItem: React.FC<ApiKeyListItemProps> = ({
   apiKey,
 }) => {
-  const {
-    updateApiKey,
-    deleteApiKey,
-    toggleVisibility,
-  } = useApiKeysState();
+  const updateApiKey = useSetAtom(updateApiKeyAtom);
+  const deleteApiKey = useSetAtom(deleteApiKeyAtom);
+  const setVisibility = useSetAtom(apiKeyVisibilityAtom);
+
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    updateApiKey(apiKey.key, unescapeValue(e.target.value));
+    updateApiKey({ key: apiKey.key, value: unescapeValue(e.target.value) });
   }, [apiKey.key, updateApiKey]);
+
+  const toggleVisibility = useCallback((key: string) => {
+    setVisibility((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  }, [setVisibility]);
+
+  console.log('ApiKeyListItem: apiKey:', apiKey);
 
   return (
     <div className="flex items-center gap-3 rounded-lg border border-border bg-background/70 px-4 py-3">

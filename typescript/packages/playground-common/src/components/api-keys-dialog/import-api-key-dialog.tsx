@@ -14,12 +14,11 @@ import { Textarea } from '@baml/ui/textarea';
 import { toast } from '@baml/ui/sonner';
 import { parse as parseDotenv } from 'dotenv';
 import { FileText } from 'lucide-react';
-import { useApiKeysState } from './use-api-keys-state';
+import { useSetAtom } from 'jotai';
+import { importApiKeysAtom } from './atoms';
 
 export const ImportApiKeyDialog: React.FC = () => {
-  const {
-    importApiKeys,
-  } = useApiKeysState();
+  const importApiKeys = useSetAtom(importApiKeysAtom);
   const [envFileContent, setEnvFileContent] = useState('');
 
   const handleImport = useCallback(() => {

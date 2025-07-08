@@ -1,5 +1,4 @@
 import { type Atom, atom } from 'jotai';
-import { apiKeysAtom, requiredApiKeysAtom } from '../../../components/api-keys-dialog/atoms';
 import { runtimeAtom } from '../atoms';
 
 // Related to test status
@@ -170,14 +169,6 @@ export const selectedFunctionObjectAtom = atom((get) => {
   return selectedFn;
 });
 
-export const areEnvVarsMissingAtom = atom((get) => {
-  const requiredVars = get(requiredApiKeysAtom)
-  const isVscode = vscode.isVscode()
-  if (!isVscode) return false
-  const envVars = get(apiKeysAtom)
-  return requiredVars.length > 0 && requiredVars.every((key) => !envVars[key])
-})
-
 export type TestStatusType = 'queued' | 'running' | 'done' | 'error' | 'idle';
 export type DoneTestStatusType =
   | 'passed'
@@ -257,3 +248,4 @@ export interface FlashRange {
 }
 
 export const flashRangesAtom = atom<FlashRange[]>([]);
+

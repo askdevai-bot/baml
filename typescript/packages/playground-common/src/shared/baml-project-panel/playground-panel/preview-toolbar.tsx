@@ -10,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from '@baml/ui/dropdown-menu';
 import { cn } from '@baml/ui/lib/utils';
-import { SidebarTrigger } from '@baml/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@baml/ui/tooltip';
 import { TooltipProvider } from '@baml/ui/tooltip';
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
@@ -30,7 +29,7 @@ import {
   areTestsRunningAtom,
   selectedItemAtom,
 } from './atoms';
-import { areEnvVarsMissingAtom } from './atoms';
+import { areApiKeysMissingAtom } from '../../../components/api-keys-dialog/atoms';
 import { showApiKeyDialogAtom } from '../../../components/api-keys-dialog/atoms';
 import { proxyUrlAtom } from '../atoms';
 import {
@@ -93,7 +92,7 @@ export function PreviewToolbar() {
     value: 'tokens';
   }[] = [{ label: 'Token Counts', icon: BarChart2, value: 'tokens' }];
 
-  const areEnvVarsMissing = useAtomValue(areEnvVarsMissingAtom);
+  const areApiKeysMissing = useAtomValue(areApiKeysMissingAtom);
   const renderedPrompt = useAtomValue(renderedPromptAtom);
   const [showCopied, setShowCopied] = React.useState(false);
   const [isParallelTestsEnabled, setIsParallelTestsEnabled] = useAtom(
@@ -185,7 +184,7 @@ export function PreviewToolbar() {
               >
                 <Key className="size-4" />
                 <span className="text-sm hidden md:block">API Keys</span>
-                {areEnvVarsMissing && (
+                {areApiKeysMissing && (
                     <div className="absolute top-0 -right-1 w-2 h-2 bg-orange-500 rounded-full" />
                   )}
               </Button>

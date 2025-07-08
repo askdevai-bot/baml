@@ -1,12 +1,10 @@
 import React from 'react';
 import { ApiKeyListItem } from './api-key-list-item';
-import type { ApiKeyEntry } from './atoms';
-import { useApiKeysState } from './use-api-keys-state';
+import { useAtomValue } from 'jotai';
+import { renderedApiKeysAtom } from './atoms';
 
 export const ApiKeysList: React.FC = () => {
-  const {
-    apiKeys,
-  } = useApiKeysState();
+  const apiKeys = useAtomValue(renderedApiKeysAtom);
 
   const filteredKeys = apiKeys.filter(({ key }) => key !== 'BOUNDARY_PROXY_URL');
   console.log('ApiKeysList: Rendering with apiKeys:', apiKeys);

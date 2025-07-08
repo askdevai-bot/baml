@@ -1,17 +1,20 @@
 import React from 'react';
 import { Button } from '@baml/ui/button';
 import { Save, Loader2 } from 'lucide-react';
-import { useAtom } from 'jotai';
-import { pendingApiKeyRowsAtom } from './atoms';
-import { useApiKeysState } from './use-api-keys-state';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import {
+  pendingApiKeyRowsAtom,
+  hasLocalChangesAtom,
+  isSavingAtom,
+  addApiKeyAtom,
+  saveApiKeyChangesAtom
+} from './atoms';
 
 export const SaveActionsFooter: React.FC = () => {
-  const {
-    isSaving,
-    hasLocalChanges,
-    saveChanges,
-    addApiKey,
-  } = useApiKeysState();
+  const [isSaving] = useAtom(isSavingAtom);
+  const hasLocalChanges = useAtomValue(hasLocalChangesAtom);
+  const saveChanges = useSetAtom(saveApiKeyChangesAtom);
+  const addApiKey = useSetAtom(addApiKeyAtom);
   const [pendingRows, setPendingRows] = useAtom(pendingApiKeyRowsAtom);
 
   // Only enable if there are valid unsaved rows or hasLocalChanges
@@ -25,7 +28,7 @@ export const SaveActionsFooter: React.FC = () => {
     pendingRows.forEach(({ key, value }) => {
       if (key.trim() !== '') {
         console.log('SaveActionsFooter: Adding API key:', key);
-        addApiKey(key, value);
+        addApiKey({ key, value });
       }
     });
     setPendingRows([{ key: '', value: '' }]); // Reset form

@@ -167,7 +167,8 @@ export class WebviewPanelHost {
    * rendered within the webview panel
    */
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
-    const isDevelopment = process.env.VSCODE_DEBUG_MODE === 'true'
+    // Change this if you want hot-reload.
+    const isDevelopment = false; // process.env.VSCODE_DEBUG_MODE === 'true'
 
     let stylesUri: string
     let scriptUri: string

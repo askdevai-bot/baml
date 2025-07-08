@@ -103,7 +103,7 @@ const PlaygroundView = () => {
       <CustomErrorBoundary message="Error loading playground">
         <Suspense fallback={<div>Loading...</div>}>
           <div className="flex flex-col w-full h-full">
-            <PromptPreview isEmbed={true} />
+            <PromptPreview />
           </div>
 
           {/* <InitialTour /> */}

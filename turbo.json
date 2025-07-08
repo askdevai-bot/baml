@@ -37,7 +37,6 @@
       "cache": false,
       "persistent": true,
       "env": [
-        "*",
         "BOUNDARY_API_*",
         "DATABASE_URL*",
         "KV_*",

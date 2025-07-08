@@ -13,7 +13,7 @@
     "release:vscode": "turbo release --filter=baml-extension...",
     "release:cli": "turbo release --filter=@baml/cli",
     "dev": "turbo run dev",
-    "dev:vscode": "turbo run dev --parallel --filter=@baml/cli --filter=@baml/language-server --filter=baml-extension --filter=@baml/playground",
+    "dev:vscode": "turbo run dev --filter=baml-extension... --filter=@baml/playground",
     "dev:language-server": "turbo run dev --filter=@baml/language-server",
     "dev:playground": "turbo run dev --filter=@baml/playground",
     "generate": "turbo run generate --concurrency=1",

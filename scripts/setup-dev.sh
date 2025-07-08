@@ -14,6 +14,7 @@ SKIP_CARGO_WATCH=false
 SKIP_RUST=false
 SKIP_GO=false
 SKIP_PYTHON=false
+SKIP_RUBY=false
 
 for arg in "$@"; do
     case $arg in
@@ -37,6 +38,10 @@ for arg in "$@"; do
             SKIP_PYTHON=true
             shift
             ;;
+        --skip-ruby)
+            SKIP_RUBY=true
+            shift
+            ;;
         --help|-h)
             echo "Usage: $0 [OPTIONS]"
             echo "Options:"
@@ -45,6 +50,7 @@ for arg in "$@"; do
             echo "  --skip-rust         Skip Rust/Cargo installation"
             echo "  --skip-go           Skip Go installation"
             echo "  --skip-python       Skip Python/uv/ruff installation"
+            echo "  --skip-ruby         Skip Ruby/rbenv installation"
             echo "  --help, -h          Show this help message"
             exit 0
             ;;
@@ -216,6 +222,77 @@ if [ "$SKIP_PYTHON" = false ]; then
     fi
 else
     echo -e "${YELLOW}⏭️  Skipping Python tooling installation${NC}"
+fi
+
+# Check if Ruby is installed via rbenv
+if [ "$SKIP_RUBY" = false ]; then
+    # Install rbenv if not already installed
+    if ! command -v rbenv &> /dev/null; then
+        echo -e "${YELLOW}📦 Installing rbenv...${NC}"
+
+        # Clone rbenv repository
+        git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+
+        # Add rbenv to PATH
+        echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+        echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+
+        # Also add to .zshrc if it exists
+        if [ -f ~/.zshrc ]; then
+            echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
+            echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+        fi
+
+        # Source rbenv for current session
+        export PATH="$HOME/.rbenv/bin:$PATH"
+        eval "$(rbenv init -)"
+
+        echo -e "${GREEN}✅ rbenv installed successfully${NC}"
+    else
+        echo -e "${GREEN}✅ rbenv already installed${NC}"
+    fi
+
+    # Install ruby-build plugin if not already installed
+    if [ ! -d "$HOME/.rbenv/plugins/ruby-build" ]; then
+        echo -e "${YELLOW}📦 Installing ruby-build plugin for rbenv...${NC}"
+        git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+        echo -e "${GREEN}✅ ruby-build plugin installed${NC}"
+    else
+        echo -e "${GREEN}✅ ruby-build plugin already installed${NC}"
+    fi
+
+    # Check if Ruby 3.2.2 is installed
+    if ! rbenv versions | grep -q "3.2.2"; then
+        echo -e "${YELLOW}📦 Installing Ruby 3.2.2...${NC}"
+        rbenv install 3.2.2
+        echo -e "${GREEN}✅ Ruby 3.2.2 installed successfully${NC}"
+    else
+        echo -e "${GREEN}✅ Ruby 3.2.2 already installed${NC}"
+    fi
+
+    # Set Ruby 3.2.2 as global version
+    echo -e "${YELLOW}📦 Setting Ruby 3.2.2 as global version...${NC}"
+    rbenv global 3.2.2
+
+    # Verify Ruby installation
+    RUBY_VERSION=$(ruby -v 2>/dev/null | cut -d' ' -f2 || echo "not installed")
+    if [[ "$RUBY_VERSION" == "3.2.2"* ]]; then
+        echo -e "${GREEN}✅ Ruby 3.2.2 is active${NC}"
+    else
+        echo -e "${YELLOW}⚠️  Ruby version is $RUBY_VERSION, expected 3.2.2. You may need to restart your shell.${NC}"
+    fi
+
+    # Install bundler if not already installed
+    if ! gem list bundler -i &> /dev/null; then
+        echo -e "${YELLOW}📦 Installing bundler...${NC}"
+        gem install bundler
+        rbenv rehash
+        echo -e "${GREEN}✅ bundler installed${NC}"
+    else
+        echo -e "${GREEN}✅ bundler already installed${NC}"
+    fi
+else
+    echo -e "${YELLOW}⏭️  Skipping Ruby installation${NC}"
 fi
 
 # Check if pnpm is installed

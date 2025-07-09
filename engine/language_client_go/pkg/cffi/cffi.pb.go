@@ -7,12 +7,11 @@
 package cffi
 
 import (
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
-
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -192,6 +191,7 @@ type CFFIValueHolder struct {
 	//	*CFFIValueHolder_CheckedValue
 	//	*CFFIValueHolder_StreamingStateValue
 	Value         isCFFIValueHolder_Value `protobuf_oneof:"value"`
+	Type          *CFFIFieldTypeHolder    `protobuf:"bytes,16,opt,name=type,proto3" json:"type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -355,6 +355,13 @@ func (x *CFFIValueHolder) GetStreamingStateValue() *CFFIValueStreamingState {
 		if x, ok := x.Value.(*CFFIValueHolder_StreamingStateValue); ok {
 			return x.StreamingStateValue
 		}
+	}
+	return nil
+}
+
+func (x *CFFIValueHolder) GetType() *CFFIFieldTypeHolder {
+	if x != nil {
+		return x.Type
 	}
 	return nil
 }
@@ -2156,7 +2163,7 @@ func (x *CFFIFieldTypeClass) GetName() *CFFITypeName {
 
 type CFFIFieldTypeTypeAlias struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Name          *CFFITypeName          `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2992,7 +2999,7 @@ var File_types_cffi_proto protoreflect.FileDescriptor
 
 const file_types_cffi_proto_rawDesc = "" +
 	"\n" +
-	"\x10types/cffi.proto\x12\tbaml.cffi\"\xb7\x06\n" +
+	"\x10types/cffi.proto\x12\tbaml.cffi\"\xeb\x06\n" +
 	"\x0fCFFIValueHolder\x129\n" +
 	"\n" +
 	"null_value\x18\x02 \x01(\v2\x18.baml.cffi.CFFIValueNullH\x00R\tnullValue\x12#\n" +
@@ -3016,7 +3023,8 @@ const file_types_cffi_proto_rawDesc = "" +
 	"tupleValue\x12R\n" +
 	"\x13union_variant_value\x18\r \x01(\v2 .baml.cffi.CFFIValueUnionVariantH\x00R\x11unionVariantValue\x12B\n" +
 	"\rchecked_value\x18\x0e \x01(\v2\x1b.baml.cffi.CFFIValueCheckedH\x00R\fcheckedValue\x12X\n" +
-	"\x15streaming_state_value\x18\x0f \x01(\v2\".baml.cffi.CFFIValueStreamingStateH\x00R\x13streamingStateValueB\a\n" +
+	"\x15streaming_state_value\x18\x0f \x01(\v2\".baml.cffi.CFFIValueStreamingStateH\x00R\x13streamingStateValue\x122\n" +
+	"\x04type\x18\x10 \x01(\v2\x1e.baml.cffi.CFFIFieldTypeHolderR\x04typeB\a\n" +
 	"\x05value\"^\n" +
 	"\fCFFITypeName\x12:\n" +
 	"\tnamespace\x18\x01 \x01(\x0e2\x1c.baml.cffi.CFFITypeNamespaceR\tnamespace\x12\x12\n" +
@@ -3122,9 +3130,9 @@ const file_types_cffi_proto_rawDesc = "" +
 	"\x11CFFIFieldTypeEnum\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"A\n" +
 	"\x12CFFIFieldTypeClass\x12+\n" +
-	"\x04name\x18\x01 \x01(\v2\x17.baml.cffi.CFFITypeNameR\x04name\",\n" +
-	"\x16CFFIFieldTypeTypeAlias\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"M\n" +
+	"\x04name\x18\x01 \x01(\v2\x17.baml.cffi.CFFITypeNameR\x04name\"E\n" +
+	"\x16CFFIFieldTypeTypeAlias\x12+\n" +
+	"\x04name\x18\x01 \x01(\v2\x17.baml.cffi.CFFITypeNameR\x04name\"M\n" +
 	"\x11CFFIFieldTypeList\x128\n" +
 	"\aelement\x18\x01 \x01(\v2\x1e.baml.cffi.CFFIFieldTypeHolderR\aelement\"z\n" +
 	"\x10CFFIFieldTypeMap\x120\n" +

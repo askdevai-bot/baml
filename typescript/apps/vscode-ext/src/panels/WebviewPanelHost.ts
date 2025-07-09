@@ -205,7 +205,7 @@ export class WebviewPanelHost {
    */
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
     // Development mode enables hot-reload from Vite dev server
-    const isDevelopment = false; //process.env.VSCODE_DEBUG_MODE === 'true'
+    const isDevelopment = process.env.VSCODE_DEBUG_MODE === 'true'
     // Port 3030 is used in debug mode, 5173 is the default Vite port
     const port = isDevelopment ? 3030 : 5173;
     const localPort = port;
@@ -216,7 +216,6 @@ export class WebviewPanelHost {
     console.log('stylesUri', stylesUri)
     console.log('scriptUri', scriptUri)
     const { stylesUri: stylesUri2, scriptUri: scriptUri2 } = this.getUris(webview, extensionUri, false, localServerUrl)
-    this.verifyUris(stylesUri, scriptUri)
     // always validate production location is present.
     this.verifyUris(stylesUri2, scriptUri2)
 

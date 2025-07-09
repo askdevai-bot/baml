@@ -73,7 +73,10 @@ export const PromptStats: React.FC<{
   const textTokens = Math.ceil(text.length / 4);
   const totalTokens = textTokens + imageTokensInfo.totalTokens;
 
+
   return (
+    <>
+    {showTokenCounts && (
     <div className="flex flex-row sm:gap-4 justify-between items-stretch px-2 py-2 text-xs border border-border bg-muted text-muted-foreground rounded-b w-full">
       <div className="flex flex-wrap gap-y-2 gap-x-5 sm:gap-x-4 w-full sm:w-auto">
         <div className="flex flex-col items-start min-w-[60px]">
@@ -114,20 +117,10 @@ export const PromptStats: React.FC<{
           </span>
         </div>
       </div>
-      <Button
-        className="mt-2 sm:mt-0 sm:ml-4 self-end sm:self-center"
-        variant="outline"
-        size="xs"
-        onClick={() =>
-          setDisplaySettings((prev) => ({
-            ...prev,
-            showTokens: !prev.showTokens,
-          }))
-        }
-      >
-        {showTokenCounts ? 'Hide Tokens' : 'Show Tokens'}
-      </Button>
     </div>
+    )}
+    
+    </>
   );
 };
 

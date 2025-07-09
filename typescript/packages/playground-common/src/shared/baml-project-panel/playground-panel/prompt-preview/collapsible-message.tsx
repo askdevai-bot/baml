@@ -55,7 +55,7 @@ export const CollapsibleMessage: React.FC<CollapsibleMessageProps> = ({
 
   return (
     <div
-      className={cn('border-l-4 pl-2 rounded', {
+      className={cn('relative border-l-4 pl-2 rounded', {
         'border-chart-1': part.role === 'assistant',
         'border-chart-2': part.role === 'user',
         'border-chart-3': part.role === 'system',

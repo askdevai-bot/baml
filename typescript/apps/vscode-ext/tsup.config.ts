@@ -32,7 +32,7 @@ export default defineConfig({
   minify: process.env.CI === 'true' ? true : false,
   sourcemap: process.env.CI === 'true' ? false : true,
   // We need to disable clean in CI because we want to keep the dist folder which has the baml-cli in it
-  clean: process.env.CI === 'true' ? false : true,
+  clean: false,
   platform: 'node',
   splitting: false,
   treeshake: true,

@@ -213,8 +213,6 @@ export class WebviewPanelHost {
 
     const { stylesUri, scriptUri } = this.getUris(webview, extensionUri, isDevelopment, localServerUrl)
 
-    console.log('stylesUri', stylesUri)
-    console.log('scriptUri', scriptUri)
     const { stylesUri: stylesUri2, scriptUri: scriptUri2 } = this.getUris(webview, extensionUri, false, localServerUrl)
     // always validate production location is present.
     this.verifyUris(stylesUri2, scriptUri2)
@@ -253,18 +251,6 @@ export class WebviewPanelHost {
       }`,
       `img-src ${webview.cspSource} https: data:`
     ];
-
-    console.log('isDevelopment', isDevelopment)
-    console.log('port', port)
-    console.log('localPort', localPort)
-    console.log('localServerUrl', localServerUrl)
-    console.log('stylesUri', stylesUri)
-    console.log('scriptUri', scriptUri)
-    console.log('nonce', nonce)
-    console.log('reactRefresh', reactRefresh)
-    console.log('reactRefreshHash', reactRefreshHash)
-    console.log('csp', csp)
-
 
     // Don't add CSP for now until we test more.
     return /*html*/ `<!DOCTYPE html>

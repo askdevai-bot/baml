@@ -156,27 +156,9 @@ export class WebviewPanelHost {
     }
   }
 
-  /**
-   * Defines and returns the HTML that should be rendered within the webview panel.
-   *
-   * @remarks This is also the place where references to the React webview dist files
-   * are created and inserted into the webview HTML.
-   *
-   * @param webview A reference to the extension webview
-   * @param extensionUri The URI of the directory containing the extension
-   * @returns A template string literal containing the HTML that should be
-   * rendered within the webview panel
-   */
-  private _getWebviewContent(webview: Webview, extensionUri: Uri) {
-    // Development mode enables hot-reload from Vite dev server
-    const isDevelopment = process.env.VSCODE_DEBUG_MODE === 'true'
-    // Port 3030 is used in debug mode, 5173 is the default Vite port
-    const port = isDevelopment ? 3030 : 5173;
-    const localPort = port;
-    const localServerUrl = `localhost:${localPort}`;
-
-    let stylesUri: string;
-    let scriptUri: string;
+  private getUris(webview: Webview, extensionUri: Uri, isDevelopment: boolean, localServerUrl: string): { stylesUri: string, scriptUri: string } {
+    let stylesUri: string
+    let scriptUri: string
 
     if (isDevelopment) {
       // In development, load from Vite dev server
@@ -191,6 +173,52 @@ export class WebviewPanelHost {
         'dist', 'playground', 'dist', 'assets', 'index.js',
       ]).toString();
     }
+
+    return { stylesUri, scriptUri }
+  }
+
+  private verifyUris(stylesUri: string, scriptUri: string) {
+    const styleUri = Uri.parse(stylesUri);
+    const scriptFileUri = Uri.parse(scriptUri);
+    try {
+      if (!fs.existsSync(styleUri.fsPath)) {
+        throw new Error(`Style file not found: ${styleUri.fsPath}`);
+      }
+      if (!fs.existsSync(scriptFileUri.fsPath)) {
+        throw new Error(`Script file not found: ${scriptFileUri.fsPath}`);
+      }
+    } catch (e) {
+      throw new Error(`Required files not found: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  }
+
+  /**
+   * Defines and returns the HTML that should be rendered within the webview panel.
+   *
+   * @remarks This is also the place where references to the React webview dist files
+   * are created and inserted into the webview HTML.
+   *
+   * @param webview A reference to the extension webview
+   * @param extensionUri The URI of the directory containing the extension
+   * @returns A template string literal containing the HTML that should be
+   * rendered within the webview panel
+   */
+  private _getWebviewContent(webview: Webview, extensionUri: Uri) {
+    // Development mode enables hot-reload from Vite dev server
+    const isDevelopment = false; //process.env.VSCODE_DEBUG_MODE === 'true'
+    // Port 3030 is used in debug mode, 5173 is the default Vite port
+    const port = isDevelopment ? 3030 : 5173;
+    const localPort = port;
+    const localServerUrl = `localhost:${localPort}`;
+
+    const { stylesUri, scriptUri } = this.getUris(webview, extensionUri, isDevelopment, localServerUrl)
+
+    console.log('stylesUri', stylesUri)
+    console.log('scriptUri', scriptUri)
+    const { stylesUri: stylesUri2, scriptUri: scriptUri2 } = this.getUris(webview, extensionUri, false, localServerUrl)
+    this.verifyUris(stylesUri, scriptUri)
+    // always validate production location is present.
+    this.verifyUris(stylesUri2, scriptUri2)
 
     const nonce = getNonce();
 
@@ -239,11 +267,11 @@ export class WebviewPanelHost {
     console.log('csp', csp)
 
 
+    // Don't add CSP for now until we test more.
     return /*html*/ `<!DOCTYPE html>
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <meta http-equiv="Content-Security-Policy" content="${csp.join('; ')}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" type="text/css" href="${stylesUri}">
         <title>BAML Playground</title>

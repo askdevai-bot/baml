@@ -1,3 +1,5 @@
+import { normalizePath } from 'vite'
+
 import * as path from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
@@ -5,6 +7,9 @@ import wasm from 'vite-plugin-wasm';
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 const isWatchMode = process.argv.includes('--watch');
+const srcPath = normalizePath(path.resolve(__dirname, './dist/'));
+const destPath = normalizePath(path.resolve(__dirname, '../vscode-ext/dist/playground'));
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -17,8 +22,8 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: path.resolve(__dirname, './dist'),
-          dest: path.resolve(__dirname, '../vscode-ext/dist/playground')
+          src: srcPath,
+          dest: destPath
         }
       ]
     })

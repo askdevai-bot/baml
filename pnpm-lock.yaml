@@ -43,11 +43,7 @@ importers:
 
   engine/baml-schema-wasm/nodejs: {}
 
-  engine/baml-schema-wasm/web:
-    dependencies:
-      '@gloo-ai/baml-schema-wasm-node':
-        specifier: workspace:*
-        version: link:../nodejs
+  engine/baml-schema-wasm/web: {}
 
   engine/cli: {}
 

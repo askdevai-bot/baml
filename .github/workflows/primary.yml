@@ -40,7 +40,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        check: [typescript-lint, rust-format, rust-lint, rust-lint-wasm, python-lint]
+        check:
+          [typescript-lint, rust-format, rust-lint, rust-lint-wasm, python-lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -66,7 +67,7 @@ jobs:
         if: matrix.check == 'python-lint'
         uses: ./.github/actions/setup-python
         with:
-          cache: 'false'
+          cache: "false"
 
       - name: Run TypeScript lint
         if: matrix.check == 'typescript-lint'
@@ -164,12 +165,17 @@ jobs:
       - name: Setup Python
         uses: ./.github/actions/setup-python
         with:
-          cache: 'false'
+          cache: "false"
 
       - name: Run Rust unit tests
         if: matrix.test-suite == 'rust-unit'
         run: cargo test --lib
         working-directory: engine
+
+      - name: Run syntax validation tests
+        if: matrix.test-suite == 'rust-unit'
+        run: cargo test
+        working-directory: engine/baml-lib
 
       - name: Run Python integration tests
         if: matrix.test-suite == 'python-integration'

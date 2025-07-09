@@ -117,7 +117,7 @@ export function PreviewToolbar() {
   };
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 overflow-x-clip">
       <div
         className={cn(
           'flex flex-row gap-1 items-center',
@@ -157,9 +157,9 @@ export function PreviewToolbar() {
                       <Copy className="size-4" />
                     )}
                     {showCopied ? (
-                      <span className="text-sm hidden md:block">Copied!</span>
+                      <span className="text-sm hidden lg:block">Copied!</span>
                     ) : (
-                      <span className="text-sm hidden md:block">
+                      <span className="text-sm hidden lg:block">
                         Copy Prompt
                       </span>
                     )}

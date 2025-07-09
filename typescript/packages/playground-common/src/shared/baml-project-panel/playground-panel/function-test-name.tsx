@@ -85,7 +85,7 @@ export const FunctionTestName: React.FC<FunctionTestNameProps> = ({
     <Breadcrumb>
       <BreadcrumbList className="flex flex-nowrap overflow-x-auto">
         <BreadcrumbItem className="flex items-center gap-1">
-          <div className="flex items-center gap-1 min-w-0 max-w-[120px] sm:max-w-[300px] md:max-w-[400px] shrink">
+          <div className="flex items-center gap-1 min-w-0 max-w-[120px] sm:max-w-[240px] md:max-w-[300px] shrink">
             <FunctionSquare className="size-4 mr-2 shrink-0" />
             <Tooltip>
               <TooltipTrigger asChild>
@@ -154,7 +154,7 @@ export const FunctionTestName: React.FC<FunctionTestNameProps> = ({
         </BreadcrumbItem>
         {/* <BreadcrumbSeparator>/</BreadcrumbSeparator> */}
         <BreadcrumbItem className="flex items-center gap-1">
-          <div className="flex items-center gap-1 min-w-0 max-w-[120px] sm:max-w-[300px] md:max-w-[400px] shrink">
+          <div className="flex items-center gap-1 min-w-0 max-w-[120px] sm:max-w-[240px] md:max-w-[300px] shrink">
             <FlaskConical className="size-4 mr-2 shrink-0" />
             <Tooltip>
               <TooltipTrigger asChild>

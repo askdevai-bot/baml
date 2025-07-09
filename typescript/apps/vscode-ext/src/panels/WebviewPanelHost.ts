@@ -180,8 +180,8 @@ export class WebviewPanelHost {
 
     if (isDevelopment) {
       // In development, load from Vite dev server
-      stylesUri = `http://localhost:${port}/src/main.css`;
-      scriptUri = `http://localhost:${port}/src/main.tsx`;
+      stylesUri = `http://${localServerUrl}/src/main.css`;
+      scriptUri = `http://${localServerUrl}/src/main.tsx`;
     } else {
       // In production, load from dist folder
       stylesUri = getUri(webview, extensionUri, [
@@ -195,8 +195,8 @@ export class WebviewPanelHost {
     const nonce = getNonce();
 
     const reactRefresh = /*html*/ `
-      <script type="module">
-        import RefreshRuntime from \"http://localhost:${localPort}/@react-refresh\"
+      <script type="module" nonce="${nonce}">
+        import RefreshRuntime from \"http://${localServerUrl}/@react-refresh\"
         RefreshRuntime.injectIntoGlobalHook(window)
         window.$RefreshReg$ = () => {}
         window.$RefreshSig$ = () => (type) => type
@@ -210,10 +210,14 @@ export class WebviewPanelHost {
       `default-src 'none'`,
       `script-src 'unsafe-eval' https://* ${
         isDevelopment
-          ? `http://${localServerUrl} http://0.0.0.0:${localPort} '${reactRefreshHash}'`
+          ? `http://${localServerUrl} http://0.0.0.0:${localPort} 'nonce-${nonce}'`
           : `'nonce-${nonce}'`
       }`,
-      `style-src ${webview.cspSource} 'self' 'unsafe-inline' https://*`,
+      `style-src ${webview.cspSource} 'self' 'unsafe-inline' https://*${
+        isDevelopment
+          ? ` http://${localServerUrl} http://0.0.0.0:${localPort}`
+          : ''
+      }`,
       `font-src ${webview.cspSource}`,
       `connect-src https://* ${
         isDevelopment
@@ -222,6 +226,18 @@ export class WebviewPanelHost {
       }`,
       `img-src ${webview.cspSource} https: data:`
     ];
+
+    console.log('isDevelopment', isDevelopment)
+    console.log('port', port)
+    console.log('localPort', localPort)
+    console.log('localServerUrl', localServerUrl)
+    console.log('stylesUri', stylesUri)
+    console.log('scriptUri', scriptUri)
+    console.log('nonce', nonce)
+    console.log('reactRefresh', reactRefresh)
+    console.log('reactRefreshHash', reactRefreshHash)
+    console.log('csp', csp)
+
 
     return /*html*/ `<!DOCTYPE html>
     <html lang="en">

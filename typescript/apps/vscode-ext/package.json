@@ -151,7 +151,7 @@
     ]
   },
   "scripts": {
-    "dev": "NODE_ENV=development tsup --watch --sourcemap",
+    "dev": "tsup --watch --sourcemap",
     "build": "pnpm run typecheck && tsup",
     "release": "pnpm run typecheck && tsup --minify",
     "vscode:package": "vsce package --no-dependencies",

@@ -4,16 +4,21 @@
     "BAML_LOG",
     "NODE_ENV",
     "CI",
-    "VERCEL_ENV",
-    "VERCEL",
     "npm_lifecycle_event",
-    "PATH",
+    "TURBO_TEAM",
+    "TURBO_TOKEN",
+    "NODE_ENV",
+    "STAGE",
+    "VERCEL",
+    "VERCEL_ENV"
+  ],
+  "globalEnv": [
+    "VSCODE_DEBUG_MODE",
     "RUST_HOME",
     "CARGO_HOME",
     "RUSTC_WRAPPER",
     "CARGO_INCREMENTAL"
   ],
-  "globalEnv": ["TURBO_TEAM", "TURBO_TOKEN", "NODE_ENV", "STAGE"],
   "globalDependencies": [
     "tsconfig.json",
     ".nvmrc",

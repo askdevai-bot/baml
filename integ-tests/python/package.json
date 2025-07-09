@@ -3,8 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "clean": "git clean -xdf .turbo node_modules",
-		"format": "ruff format .",
-		"integ-tests": "./run_tests.sh"
+    "generate": "baml-cli generate --from ../baml_src",
+    "format": "ruff format .",
+    "integ-tests": "./run_tests.sh"
+  },
+  "dependencies": {
+    "@boundaryml/baml": "workspace:*"
   }
 }

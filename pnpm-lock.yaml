@@ -89,7 +89,23 @@ importers:
         specifier: ^0.31.24
         version: 0.31.24
 
-  integ-tests/python: {}
+  integ-tests/go:
+    dependencies:
+      '@boundaryml/baml':
+        specifier: workspace:*
+        version: link:../../engine/language_client_typescript
+
+  integ-tests/python:
+    dependencies:
+      '@boundaryml/baml':
+        specifier: workspace:*
+        version: link:../../engine/language_client_typescript
+
+  integ-tests/python-v1:
+    dependencies:
+      '@boundaryml/baml':
+        specifier: workspace:*
+        version: link:../../engine/language_client_typescript
 
   integ-tests/react:
     dependencies:
@@ -220,6 +236,12 @@ importers:
       typescript:
         specifier: ^5.8.2
         version: 5.8.3
+
+  integ-tests/ruby:
+    dependencies:
+      '@boundaryml/baml':
+        specifier: workspace:*
+        version: link:../../engine/language_client_typescript
 
   integ-tests/typescript:
     dependencies:

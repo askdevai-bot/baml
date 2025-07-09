@@ -172,62 +172,72 @@ export class WebviewPanelHost {
     const isDevelopment = process.env.VSCODE_DEBUG_MODE === 'true'
     // Port 3030 is used in debug mode, 5173 is the default Vite port
     const port = isDevelopment ? 3030 : 5173;
+    const localPort = port;
+    const localServerUrl = `localhost:${localPort}`;
 
-    let stylesUri: string
-    let scriptUri: string
+    let stylesUri: string;
+    let scriptUri: string;
 
     if (isDevelopment) {
       // In development, load from Vite dev server
-      stylesUri = `http://localhost:${port}/src/main.css`
-      scriptUri = `http://localhost:${port}/src/main.tsx`
+      stylesUri = `http://localhost:${port}/src/main.css`;
+      scriptUri = `http://localhost:${port}/src/main.tsx`;
     } else {
       // In production, load from dist folder
       stylesUri = getUri(webview, extensionUri, [
         'dist', 'playground', 'dist', 'assets', 'index.css',
-      ]).toString()
+      ]).toString();
       scriptUri = getUri(webview, extensionUri, [
         'dist', 'playground', 'dist', 'assets', 'index.js',
-      ]).toString()
+      ]).toString();
     }
 
-    console.log('stylesUri', stylesUri)
-    console.log('scriptUri', scriptUri)
+    const nonce = getNonce();
 
-    const nonce = getNonce()
+    const reactRefresh = /*html*/ `
+      <script type="module">
+        import RefreshRuntime from \"http://localhost:${localPort}/@react-refresh\"
+        RefreshRuntime.injectIntoGlobalHook(window)
+        window.$RefreshReg$ = () => {}
+        window.$RefreshSig$ = () => (type) => type
+        window.__vite_plugin_react_preamble_installed__ = true
+      </script>`;
 
-    // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
-    return /*html*/ `
-          <!DOCTYPE html>
-          <html lang="en">
-            <head>
-                            <meta charset="UTF-8" />
-              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-              <!-- Content Security Policy:
-                   - Development: Allows Vite dev server on specific port + playground server on any localhost port
-                   - Production: Restricts to webview source + playground server on any localhost port -->
-              <meta http-equiv="Content-Security-Policy" content="${isDevelopment
-                ? `default-src 'none'; style-src 'unsafe-inline' http://localhost:${port}; script-src 'nonce-${nonce}' 'unsafe-eval' http://localhost:${port}; connect-src http://localhost:${port} ws://localhost:${port} http://localhost:* ws://localhost:*; img-src ${webview.cspSource} https: data:; font-src ${webview.cspSource};`
-                : `default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; connect-src http://localhost:* ws://localhost:*; img-src ${webview.cspSource} https: data:; font-src ${webview.cspSource};`
-              }">
-              ${isDevelopment ? '' : `<link rel="stylesheet" type="text/css" href="${stylesUri}">`}
-              <title>BAML Playground</title>
-            </head>
-            <body>
-              <div id="root">Loading BAML Playground...</div>
-              ${isDevelopment
-                ? `<script type="module" nonce="${nonce}">
-                    import RefreshRuntime from 'http://localhost:${port}/@react-refresh'
-                    RefreshRuntime.injectIntoGlobalHook(window)
-                    window.$RefreshReg$ = () => {}
-                    window.$RefreshSig$ = () => (type) => type
-                    window.__vite_plugin_react_preamble_installed__ = true
-                  </script>
-                  <script type="module" nonce="${nonce}" src="http://localhost:${port}/@vite/client"></script>
-                  <script type="module" nonce="${nonce}" src="${scriptUri}"></script>`
-                : `<script type="module" nonce="${nonce}" src="${scriptUri}"></script>`
-              }
-            </body>
-          </html>`
+    // This hash must match the hash of the reactRefresh script above
+    const reactRefreshHash = 'sha256-HjGiRduPjIPUqpgYIIsmVtkcLmuf/iR80mv9eslzb4I=';
+
+    const csp = [
+      `default-src 'none'`,
+      `script-src 'unsafe-eval' https://* ${
+        isDevelopment
+          ? `http://${localServerUrl} http://0.0.0.0:${localPort} '${reactRefreshHash}'`
+          : `'nonce-${nonce}'`
+      }`,
+      `style-src ${webview.cspSource} 'self' 'unsafe-inline' https://*`,
+      `font-src ${webview.cspSource}`,
+      `connect-src https://* ${
+        isDevelopment
+          ? `ws://${localServerUrl} ws://0.0.0.0:${localPort} http://${localServerUrl} http://0.0.0.0:${localPort}`
+          : ''
+      }`,
+      `img-src ${webview.cspSource} https: data:`
+    ];
+
+    return /*html*/ `<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="Content-Security-Policy" content="${csp.join('; ')}">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" type="text/css" href="${stylesUri}">
+        <title>BAML Playground</title>
+      </head>
+      <body>
+        <div id="root">Loading BAML Playground...</div>
+        ${isDevelopment ? reactRefresh : ''}
+        <script type="module" ${isDevelopment ? '' : `nonce=\"${nonce}\"`} src="${scriptUri}"></script>
+      </body>
+    </html>`;
   }
 
   /**

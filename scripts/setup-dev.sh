@@ -143,7 +143,7 @@ if [ "$SKIP_GO" = false ]; then
     if command -v go &> /dev/null; then
         if ! command -v protoc-gen-go &> /dev/null; then
             echo -e "${YELLOW}📦 Installing protoc-gen-go...${NC}"
-            go install github.com/golang/protobuf/protoc-gen-go@latest
+            go install github.com/golang/protobuf/protoc-gen-go@v1.36.6
             echo -e "${GREEN}✅ protoc-gen-go installed${NC}"
         else
             echo -e "${GREEN}✅ protoc-gen-go already installed${NC}"
@@ -230,7 +230,7 @@ if [ "$SKIP_RUBY" = false ]; then
     if ! command -v rbenv &> /dev/null; then
         if [ -d "$HOME/.rbenv" ]; then
             echo -e "${YELLOW}📦 rbenv directory exists but not in PATH. Adding to PATH...${NC}"
-            
+
             # Add rbenv to PATH
             if ! grep -q 'export PATH="$HOME/.rbenv/bin:$PATH"' ~/.bashrc 2>/dev/null; then
                 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
@@ -305,11 +305,11 @@ if [ "$SKIP_RUBY" = false ]; then
     # Check if Ruby 3.2.2 is installed
     if ! rbenv versions 2>/dev/null | grep -q "3.2.2"; then
         echo -e "${YELLOW}📦 Installing Ruby 3.2.2...${NC}"
-        
+
         # Set environment variables for Ruby build
         export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@3)"
         export RUBY_CFLAGS="-Wno-error=implicit-function-declaration"
-        
+
         rbenv install 3.2.2
         if [ $? -eq 0 ]; then
             echo -e "${GREEN}✅ Ruby 3.2.2 installed successfully${NC}"

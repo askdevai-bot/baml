@@ -1,295 +1,214 @@
-# BAML Development Setup Guide
+# Development Setup Guide
 
-This guide will help you get the BAML monorepo up and running on your local machine.
+This guide provides detailed instructions for setting up your BAML development environment.
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/boundaryml/baml.git
+# Clone the repository
+git clone https://github.com/BoundaryML/baml.git
 cd baml
 
-# 2. Run the setup script
+# Run the setup script
 ./scripts/setup-dev.sh
 
-# 3. Install dependencies
-pnpm install
-
-# 4. Run development servers with Infisical
-infisical run --env=development -- pnpm dev
+# Start developing!
+pnpm dev
 ```
 
-## 📋 Prerequisites
+## Tool Management with mise
 
-- **Node.js** 18+ (for TypeScript/JavaScript development)
-- **macOS** or **Linux** (Windows users should use WSL2)
-- **Infisical CLI** for environment variable management
+We use [mise](https://mise.jdx.dev/) (formerly rtx) as our polyglot tool version manager. This ensures all developers use the exact same versions of tools, preventing "works on my machine" issues.
 
-## 🛠️ Detailed Setup
+### What is mise?
 
-### 1. Install Infisical CLI
+mise is a tool version manager that can handle multiple programming languages and tools in one place. It replaces the need for nvm, rbenv, pyenv, rustup, and other version managers.
 
-BAML uses Infisical for secure environment variable management instead of `.env` files.
+### Configuration
 
-```bash
-# macOS
-brew install infisical/get-cli/infisical
+Our tool versions are defined in `mise.toml`:
 
-# Linux/WSL
-curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | sudo -E bash
-sudo apt-get update && sudo apt-get install infisical
-
-# Login to Infisical
-infisical login
+```toml
+[tools]
+rust = "1.85.0"
+go = "1.23"
+python = "3.12"
+ruby = "3.2.2"
+node = "lts"
+# ... and more
 ```
 
-### 2. Run the Setup Script
-
-The setup script installs all required development tools:
+### Common mise Commands
 
 ```bash
-./scripts/setup-dev.sh
+# List all installed tools
+mise list
+
+# Install/update all tools to match mise.toml
+mise install
+
+# Show current tool versions
+mise current
+
+# Upgrade tools to latest versions (respecting version constraints)
+mise upgrade
+
+# Trust the configuration file (required after changes)
+mise trust
 ```
 
-This script installs:
-- **Rust** (1.85.0) and cargo-watch for Rust hot reloading
-- **Go** (1.23) with protoc-gen-go and goimports
-- **Python** tooling (uv package manager and ruff formatter)
-- **pnpm** for Node.js package management
-- **wasm-pack** for building Rust WASM packages
-- **cross-rs** for cross-compilation
+## Manual Setup (Not Recommended)
 
-#### Setup Script Options
+If you prefer to install tools manually or need to understand what the setup script does:
 
-You can skip certain installations if you already have them:
+### Required Tools
 
+1. **Rust** (1.85.0)
+   ```bash
+   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+   rustup install 1.85.0
+   rustup default 1.85.0
+   ```
+
+2. **Go** (1.23)
+   - Download from https://golang.org/dl/
+   - Install protoc-gen-go: `go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.6`
+
+3. **Python** (3.12)
+   - Install Python 3.12
+   - Install uv: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+
+4. **Ruby** (3.2.2)
+   - Install Ruby 3.2.2
+   - Install bundler: `gem install bundler`
+
+5. **Node.js** (LTS)
+   - Install Node.js LTS
+   - Install pnpm: `npm install -g pnpm`
+
+### Platform-Specific Dependencies
+
+**macOS:**
 ```bash
-./scripts/setup-dev.sh --help              # Show all options
-./scripts/setup-dev.sh --skip-rust         # Skip Rust installation
-./scripts/setup-dev.sh --skip-go           # Skip Go installation
-./scripts/setup-dev.sh --skip-python       # Skip Python tooling
-./scripts/setup-dev.sh --skip-pnpm         # Skip pnpm installation
-./scripts/setup-dev.sh --skip-cargo-watch  # Skip cargo-watch installation
+brew install libyaml openssl@3
 ```
 
-### 3. Install Project Dependencies
+**Linux:**
+Dependencies vary by distribution. The setup script will guide you.
+
+## Development Workflow
+
+### Running Everything
 
 ```bash
-# Install all Node.js dependencies
-pnpm install
+# Start all services with hot reloading
+pnpm dev
 
-# The setup script already handles Python dependencies via uv
-# Go dependencies are managed automatically by go.mod
+# Run only specific components
+pnpm dev:vscode       # VSCode extension
+pnpm dev:playground   # Web playground
 ```
 
-## 🏃 Running the Development Environment
-
-### Basic Development Commands
+### Running Tests
 
 ```bash
-# Run all development servers (TypeScript + Rust)
-infisical run --env=development -- pnpm dev
-
-# Run with Turborepo watch mode (recommended for Rust development)
-infisical run --env=development -- pnpm turbo watch dev
-
-# Run specific workspaces
-infisical run --env=development -- pnpm dev:playground   # Just the playground
-infisical run --env=development -- pnpm dev:vscode       # VSCode extension (builds playground first)
-
-# Other useful commands
-pnpm setup-dev        # Run the setup script
-pnpm generate         # Generate BAML clients
-pnpm typecheck        # Type check all packages
-pnpm format:fix       # Format code with Biome
-pnpm test            # Run tests
-pnpm build           # Build all packages
-pnpm clean           # Clean all build artifacts
-```
-
-### Working with Different Languages
-
-#### TypeScript/JavaScript Development
-
-```bash
-# Run TypeScript apps with hot reloading
-infisical run --env=development -- pnpm dev
-
-# Type checking
-pnpm typecheck
-
-# Build production bundles
-infisical run --env=production -- pnpm build
-```
-
-#### Rust Development
-
-The Rust code in the `engine` directory has special configuration for proper hot reloading:
-
-```bash
-# Option 1: Use Turborepo watch (recommended)
-infisical run --env=development -- pnpm turbo watch dev
-
-# Option 2: Direct cargo watch in engine directory
-cd engine
-cargo watch -x 'check --workspace' -x 'test --workspace --lib'
-```
-
-The `engine/turbo.json` only needs to specify `interruptible: true` - all other settings (env, cache, etc.) are inherited from the root configuration.
-
-#### Python Development
-
-```bash
-# Run Python tests
-cd integ-tests/python
-uv run pytest
-
-# Format Python code
-uv run ruff format .
-
-# Lint Python code
-uv run ruff check .
-```
-
-#### Go Development
-
-```bash
-# Run Go tests
-cd integ-tests/go
-go test ./...
-
-# Format Go code
-goimports -w .
-```
-
-## 🔧 Common Development Workflows
-
-### 1. Making Changes to BAML Language
-
-```bash
-# 1. Edit .baml files in integ-tests/baml_src
-# 2. Generate clients
-infisical run --env=development -- pnpm generate
-
-# 3. Run tests to verify
-infisical run --env=development -- pnpm test
-```
-
-### 2. Working on the VSCode Extension
-
-```bash
-# 1. Start the extension development server
-infisical run --env=development -- pnpm dev:vscode
-
-# 2. In VSCode, press F5 to launch Extension Development Host
-# 3. The extension will hot reload on changes
-```
-
-### 3. Testing Cross-Language Integration
-
-```bash
-# Run all integration tests
-infisical run --env=development -- ./integ-tests/run-tests.sh
+# Run all tests
+./run-tests.sh
 
 # Run specific language tests
 cd integ-tests/typescript && pnpm test
 cd integ-tests/python && uv run pytest
-cd integ-tests/go && go test ./...
-cd integ-tests/ruby && bundle exec ruby test_*
+cd integ-tests/ruby && rake test
 ```
 
-## 📁 Project Structure
-
-```
-baml/
-├── engine/              # Rust implementation (compiler, runtime, LSP)
-│   ├── baml-lib/       # Core BAML libraries
-│   ├── language_server/ # LSP implementation
-│   └── turbo.json      # Rust-specific Turborepo config
-├── typescript/          # TypeScript packages
-│   ├── apps/           # Applications (playground, docs)
-│   └── packages/       # Shared packages
-├── integ-tests/        # Cross-language integration tests
-│   ├── baml_src/       # BAML source files for testing
-│   ├── python/         # Python tests
-│   ├── typescript/     # TypeScript tests
-│   ├── go/            # Go tests
-│   └── ruby/          # Ruby tests
-├── fern/              # Documentation
-└── turbo.json         # Root Turborepo configuration
-```
-
-## 🔍 Debugging Tips
-
-### Environment Variables
+### Building
 
 ```bash
-# Check which environment you're using
-infisical export --env=development
+# Build everything
+pnpm build
 
-# Run with specific project/path
-infisical run --projectId=xxx --path=/apps/web --env=development -- pnpm dev
+# Build specific components
+cargo build --release    # Rust components
+pnpm build              # TypeScript components
 ```
 
-### Turborepo Cache
+## Troubleshooting
 
-```bash
-# See what would run without cache
-pnpm turbo build --dry
+### mise Issues
 
-# Run with cache analysis
-pnpm turbo build --summarize
+**"mise: command not found"**
+- The setup script installs mise to `~/.local/bin`. Make sure this is in your PATH.
+- Try: `source ~/.bashrc` or `source ~/.zshrc`
 
-# Clear cache if needed
-pnpm turbo clean
-```
+**"mise trust required"**
+- Run: `mise trust` in the project root
 
-### Rust Development
+**Tool version conflicts**
+- Run: `mise doctor` to diagnose issues
+- Try: `mise install --force` to reinstall tools
 
-```bash
-# Check Rust compilation errors
-cd engine && cargo check --workspace
+### Language-Specific Issues
 
-# Run Rust tests
-cd engine && cargo test --workspace
+**Rust compilation errors**
+- Ensure you're using the correct Rust version: `rustc --version`
+- Clear cargo cache: `cargo clean`
 
-# See detailed Rust logs
-RUST_LOG=debug infisical run --env=development -- pnpm dev
-```
+**Go module errors**
+- Clear module cache: `go clean -modcache`
+- Ensure GOPATH is set correctly
 
-## 🚨 Troubleshooting
+**Python/uv issues**
+- Clear uv cache: `uv cache clean`
+- Reinstall dependencies: `uv sync --reinstall`
 
-### Common Issues
-
-1. **"command not found" after setup**
-   - Restart your terminal or run `source ~/.bashrc` (or `~/.zshrc`)
-
-2. **Infisical authentication issues**
-   - Run `infisical logout` then `infisical login` again
-   - Ensure you have access to the correct project
-
-3. **Rust compilation errors**
-   - Ensure you have Rust 1.85.0: `rustup update`
-   - Clear cargo cache: `cargo clean`
-
-4. **Port already in use**
-   - Kill existing processes: `lsof -ti:3000 | xargs kill -9`
-   - Or change the port in the respective package.json
+**Ruby/bundler issues**
+- Clear bundler cache: `bundle clean --force`
+- Reinstall gems: `bundle install --force`
 
 ### Getting Help
 
-- Check the [documentation](https://docs.boundaryml.com)
-- Join our [Discord community](https://discord.gg/boundaryml)
-- Open an issue on [GitHub](https://github.com/boundaryml/baml/issues)
+1. Check the [CONTRIBUTING.md](./CONTRIBUTING.md) guide
+2. Search existing [GitHub issues](https://github.com/BoundaryML/baml/issues)
+3. Ask in our [Discord #contributing channel](https://discord.gg/BTNBeXGuaS)
 
-## 📝 Next Steps
+## Advanced Configuration
 
-1. Explore the [BAML examples](./integ-tests/baml_src/fiddle-examples/)
-2. Read the [contribution guidelines](./CONTRIBUTING.md) for testing details and architecture information
-3. Review the [Turborepo inputs/outputs guide](./TURBOREPO_INPUTS_OUTPUTS_GUIDE.md) for cache configuration
-4. Try building a simple BAML function in the playground
-5. Join our [Discord community](https://discord.gg/BTNBeXGuaS) and introduce yourself in #contributing
+### Custom mise Settings
 
----
+You can create a `.mise.local.toml` file for personal overrides:
 
-Happy coding! 🎉
+```toml
+[tools]
+# Use a different Node version locally
+node = "20.10.0"
+
+[env]
+# Add custom environment variables
+MY_CUSTOM_VAR = "value"
+```
+
+This file is gitignored and won't affect other developers.
+
+### IDE Setup
+
+**VSCode:**
+- Install recommended extensions when prompted
+- mise tools will be automatically detected
+
+**IntelliJ/RustRover:**
+- Configure SDK paths to use mise-installed versions
+- Go: `~/.local/share/mise/installs/go/1.23/`
+- Rust: `~/.local/share/mise/installs/rust/1.85.0/`
+
+**Other IDEs:**
+- Point to tool installations in `~/.local/share/mise/installs/`
+
+## Keeping Your Environment Updated
+
+When other developers update tool versions:
+
+1. Pull the latest changes
+2. Run: `mise install`
+3. Restart your terminal/IDE if needed
+
+The setup script can be run anytime to ensure your environment is up to date.

@@ -4,14 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node --expose-gc ./node_modules/jest/bin/jest.js",
+    "test": "mise x -- node --expose-gc ./node_modules/jest/bin/jest.js",
     "build": "tsc",
-    "integ-tests:ci": "pnpm tsc && infisical run --env=test -- pnpm test -- --ci --silent false --testTimeout 30000 --verbose=false --reporters=jest-junit",
-    "integ-tests": "pnpm tsc && infisical run --env=test -- pnpm test -- --silent false --testTimeout 60000",
+    "integ-tests:ci": "pnpm tsc && mise x -- infisical run --env=test -- pnpm test -- --ci --silent false --testTimeout 30000 --verbose=false --reporters=jest-junit",
+    "integ-tests": "pnpm tsc && mise x -- infisical run --env=test -- pnpm test -- --silent false --testTimeout 60000",
     "integ-tests:dotenv": "pnpm tsc && pnpm test -- --silent false --testTimeout 30000",
     "generate": "baml-cli generate --from ../baml_src",
-    "memory-test": "BAML_LOG=info infisical run --env=test -- pnpm test -- --silent false --testTimeout 60000 -t 'memory'",
-    "typecheck": "tsc --noEmit"
+    "memory-test": "mise x -- BAML_LOG=info infisical run --env=test -- pnpm test -- --silent false --testTimeout 60000 -t 'memory'",
+    "typecheck": "mise x -- tsc --noEmit"
   },
   "keywords": [],
   "author": "",

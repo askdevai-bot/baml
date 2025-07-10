@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "clean": "cargo clean && git clean -xdf .turbo node_modules target",
-		"build": "cargo build --workspace",
-    "typecheck": "cargo check --workspace",
-		"release": "cargo build --release --workspace",
-		"dev": "cargo build --workspace",
-		"format": "cargo fmt --workspace",
-    "format:check": "cargo fmt --check --workspace",
-    "format:fix": "cargo fmt --workspace",
-		"lint": "cargo clippy --workspace -- -D warnings",
-    "test": "cargo test --workspace --lib"
+    "clean": "mise x -- cargo clean && git clean -xdf .turbo node_modules target",
+		"build": "mise x -- cargo build --workspace",
+    "typecheck": "mise x -- cargo check --workspace",
+		"release": "mise x -- cargo build --release --workspace",
+		"dev": "mise x -- cargo build --workspace",
+		"format": "mise x -- cargo fmt --workspace",
+    "format:check": "mise x -- cargo fmt --check --workspace",
+    "format:fix": "mise x -- cargo fmt --workspace",
+		"lint": "mise x -- cargo clippy --workspace -- -D warnings",
+    "test": "mise x -- cargo test --workspace --lib"
   }
 }

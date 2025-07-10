@@ -2,8 +2,9 @@
 set -x
 set -e
 
-# Skip Rust installation in setup-dev.sh since we handled it above
-bash ../../../scripts/setup-dev.sh --skip-pnpm --skip-cargo-watch --skip-go --skip-ruby
+# Ensure all tools are installed via Mise
+curl https://mise.run | sh
+mise install
 
 # Try to source cargo environment from multiple possible locations
 if [ -f "$HOME/.cargo/env" ]; then
@@ -26,8 +27,11 @@ fi
 #llvm-config --version
 # g++ --version
 
+# System dependencies (still needed)
 dnf install -y llvm
+DNF_EXIT_CODE=$?
 dnf install -y clang
+DNF_EXIT_CODE2=$?
 
 cd ../../../engine/baml-schema-wasm
 export OPENSSL_NO_VENDOR=1

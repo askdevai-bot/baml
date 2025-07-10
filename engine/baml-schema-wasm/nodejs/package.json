@@ -8,7 +8,7 @@
     "clean": "git clean -xdf ./dist .turbo node_modules",
     "build": "pnpm run pack --dev",
     "release": "pnpm run pack --release",
-    "pack": "wasm-pack build ../ --target nodejs --out-dir ./nodejs/dist",
+    "pack": "mise x -- wasm-pack build ../ --target nodejs --out-dir ./nodejs/dist",
     "typecheck": "pnpm run pack --dev"
   },
   "repository": {

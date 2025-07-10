@@ -64,7 +64,13 @@
       ]
     },
     "generate": {
-      "dependsOn": ["@baml/cli#build"],
+      "dependsOn": [
+        "@baml/cli#build",
+        "@boundaryml/baml#build",
+        "@baml/language-client-python#build",
+        "@baml/language-client-ruby#build",
+        "@baml/language-client-go#build"
+      ],
       "inputs": [
         "**/*.baml",
         "**/*.rs",

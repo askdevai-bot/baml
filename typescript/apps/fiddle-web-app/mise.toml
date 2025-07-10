@@ -1,0 +1,9 @@
+# Mise configuration for BAML development environment
+
+[tools]
+# Core languages
+rust = "1.85.0"           # Used in vercel-build.sh
+python = "3.12"           # Used for uv, ruff
+
+[settings]
+idiomatic_version_file_enable_tools = ["rust", "python"]

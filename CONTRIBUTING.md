@@ -10,6 +10,7 @@ First off, thanks for your interest in contributing to BAML! We appreciate all t
   - [Table of Contents](#table-of-contents)
   - [How to Contribute](#how-to-contribute)
     - [Examples of Merged PRs:](#examples-of-merged-prs)
+  - [Quick Start - Development Setup](#quick-start---development-setup)
   - [Setting up the BAML Compiler and Runtime](#setting-up-the-baml-compiler-and-runtime)
     - [Compiler Architecture Overview](#compiler-architecture-overview)
     - [Steps to Build and Test Locally](#steps-to-build-and-test-locally)
@@ -63,6 +64,33 @@ First off, thanks for your interest in contributing to BAML! We appreciate all t
 
 - **Implement `map` type**: [PR #797](https://github.com/BoundaryML/baml/pull/797)
 
+## Quick Start - Development Setup
+
+We use [mise](https://mise.jdx.dev/) to manage development tools and ensure everyone has the correct versions.
+
+1. **Run the setup script**:
+   ```bash
+   ./scripts/setup-dev.sh
+   ```
+
+   This will:
+   - Install mise (if not already installed)
+   - Install all required tools with correct versions (Rust 1.85.0, Go 1.23, Python 3.12, Ruby 3.2.2, Node.js LTS)
+   - Install language-specific tools (cargo-watch, wasm-pack, protoc-gen-go, etc.)
+   - Set up Python and Ruby dependencies
+
+2. **Verify installation**:
+   ```bash
+   mise list
+   ```
+
+3. **Update tools** (when `mise.toml` changes):
+   ```bash
+   mise install
+   ```
+
+The setup script automatically handles all dependencies and version management, ensuring a consistent development environment across all contributors.
+
 ## Setting up the BAML Compiler and Runtime
 
 #### Compiler Architecture Overview
@@ -75,9 +103,10 @@ First off, thanks for your interest in contributing to BAML! We appreciate all t
 
 ### Steps to Build and Test Locally
 
-1. Install protobuf generator for Go `brew install protoc-gen-go`
-
-1. Install Rust
+1. Run the setup script if you haven't already:
+   ```bash
+   ./scripts/setup-dev.sh
+   ```
 
 2. Run `cargo build` in `engine/` and make sure everything builds on your machine.
 
@@ -211,35 +240,26 @@ dotenv -e ../.env -- uv run pytest  # or use infisical for internal BAML devs
 
 ### Ruby Integration Tests
 
-1. Install prerequisites:
+1. Prerequisites are handled by the setup script (Ruby 3.2.2 via mise)
 
-   - [mise](https://mise.jdx.dev/getting-started.html) for Ruby version management:
-     ```bash
-     brew install mise  # on macOS
-     # or
-     curl https://mise.run | sh  # other platforms
-     ```
-   - Rust toolchain (installed above)
-
-2. Set up mise and build the Ruby client:
+2. Build the Ruby client:
 
 ```bash
 cd integ-tests/ruby
-mise install  # This will install Ruby version from .mise.toml
-(cd ../../engine/language_client_ruby && mise exec -- rake compile)
+(cd ../../engine/language_client_ruby && rake compile)
 ```
 
 3. Install dependencies and generate client:
 
 ```bash
-mise exec -- bundle install
-mise exec -- baml-cli generate --from ../baml_src
+bundle install
+baml-cli generate --from ../baml_src
 ```
 
 4. Run tests:
 
 ```bash
-dotenv -e ../.env -- mise exec -- rake test  # or use infisical for internal BAML devs
+dotenv -e ../.env -- rake test  # or use infisical for internal BAML devs
 ```
 
 ### Adding New Tests

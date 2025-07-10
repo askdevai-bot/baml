@@ -2,9 +2,7 @@
 set -x
 set -e
 
-# Ensure all tools are installed via Mise
-curl https://mise.run | sh
-mise install
+pnpm dlx @jdxcode/mise install
 
 # Try to source cargo environment from multiple possible locations
 if [ -f "$HOME/.cargo/env" ]; then

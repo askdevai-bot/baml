@@ -2,7 +2,6 @@
 set -x
 set -e
 
-pnpm dlx @jdxcode/mise install
 
 # Try to source cargo environment from multiple possible locations
 if [ -f "$HOME/.cargo/env" ]; then
@@ -30,6 +29,38 @@ dnf install -y llvm
 DNF_EXIT_CODE=$?
 dnf install -y clang
 DNF_EXIT_CODE2=$?
+
+# Install Rust 1.85.0 if not present or wrong version
+if ! command -v rustc &> /dev/null || [[ $(rustc --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+') != "1.85.0" ]]; then
+    echo "Installing Rust 1.85.0..."
+    curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain 1.85.0
+    source $HOME/.cargo/env
+fi
+
+# Install Go 1.23 if not present or wrong version
+if ! command -v go &> /dev/null || [[ $(go version | grep -oE 'go[0-9]+\.[0-9]+') != "go1.23" ]]; then
+    echo "Installing Go 1.23..."
+    wget https://go.dev/dl/go1.23.linux-amd64.tar.gz
+    rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.linux-amd64.tar.gz
+    export PATH="/usr/local/go/bin:$PATH"
+fi
+
+# Ensure Go is in PATH
+export PATH="/usr/local/go/bin:$PATH"
+
+echo "Go version: $(go version)"
+echo "Rust version: $(rustc --version)"
+
+# Install Rust tools
+cargo install wasm-pack --version 0.13.1 || true
+cargo install cross || true
+
+# Install Go tools
+export GOPATH="$HOME/go"
+export PATH="$GOPATH/bin:$PATH"
+go install golang.org/x/tools/cmd/goimports@latest
+# Install protoc-gen-go (using aqua style version)
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.6
 
 cd ../../../engine/baml-schema-wasm
 export OPENSSL_NO_VENDOR=1

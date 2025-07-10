@@ -26,7 +26,7 @@ export const CollapsibleMessage: React.FC<CollapsibleMessageProps> = ({
   partIndex,
   testCase,
 }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const firstLine = getFirstLine(part.parts);
   const statsText = part.parts
     .map((part: any) => part.as_text() ?? '')

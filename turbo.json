@@ -13,11 +13,7 @@
     "VERCEL_ENV"
   ],
   "globalEnv": [
-    "VSCODE_DEBUG_MODE",
-    "RUST_HOME",
-    "CARGO_HOME",
-    "RUSTC_WRAPPER",
-    "CARGO_INCREMENTAL"
+    "VSCODE_DEBUG_MODE"
   ],
   "globalDependencies": [
     "tsconfig.json",
@@ -73,9 +69,6 @@
       ],
       "inputs": [
         "**/*.baml",
-        "**/*.rs",
-        "**/*.toml",
-        "**/Cargo.lock",
         "**/*.j2",
         "**/*.pest",
         "**/*.ts",
@@ -104,9 +97,6 @@
       "dependsOn": ["^typecheck"],
       "inputs": [
         "**/*.baml",
-        "**/*.rs",
-        "**/*.toml",
-        "**/Cargo.lock",
         "**/*.j2",
         "**/*.pest",
         "**/*.ts",
@@ -128,10 +118,6 @@
       "outputs": [
         "dist/**",
         "node_modules/.cache/tsbuildinfo.json",
-        "target/**",
-        "!target/**/deps/**",
-        "!target/**/incremental/**",
-        "!target/**/.fingerprint/**",
         "npm/**",
         "artifacts/**"
       ]
@@ -140,9 +126,6 @@
       "dependsOn": ["^build"],
       "inputs": [
         "**/*.baml",
-        "**/*.rs",
-        "**/*.toml",
-        "**/Cargo.lock",
         "**/*.j2",
         "**/*.pest",
         "**/*.ts",
@@ -176,10 +159,6 @@
         ".next/**",
         "!.next/cache/**",
         "out/**",
-        "target/**",
-        "!target/**/deps/**",
-        "!target/**/incremental/**",
-        "!target/**/.fingerprint/**",
         "npm/**",
         "artifacts/**",
         "lib/**",
@@ -208,9 +187,6 @@
       "dependsOn": ["^release"],
       "inputs": [
         "**/*.baml",
-        "**/*.rs",
-        "**/*.toml",
-        "**/Cargo.lock",
         "**/*.j2",
         "**/*.pest",
         "**/*.ts",
@@ -222,10 +198,6 @@
         "dist/**",
         ".next/**",
         "!.next/cache/**",
-        "target/release/**",
-        "!target/**/deps/**",
-        "!target/**/incremental/**",
-        "!target/**/.fingerprint/**",
         "npm/**",
         "artifacts/**"
       ],

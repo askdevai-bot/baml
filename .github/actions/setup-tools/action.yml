@@ -5,7 +5,7 @@ inputs:
   install-mise:
     description: 'Install mise version manager'
     required: false
-    default: 'false'
+    default: 'true'
 
 runs:
   using: 'composite'

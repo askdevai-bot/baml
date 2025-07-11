@@ -162,6 +162,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Tools
+        uses: ./.github/actions/setup-tools
+
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
         with:
@@ -221,6 +224,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Tools
+        uses: ./.github/actions/setup-tools
+
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
         with:
@@ -248,6 +254,9 @@ jobs:
     if: ${{ (needs.determine-version.outputs.is_release_tag == 'true') || inputs.force_publish_vscode }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup Tools
+        uses: ./.github/actions/setup-tools
 
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
@@ -278,6 +287,9 @@ jobs:
       # We need checkout, java, and gradle because there's no CLI for publishing
       # to JetBrains Marketplace, just a gradle task in the project.
       - uses: actions/checkout@v4
+
+      - name: Setup Tools
+        uses: ./.github/actions/setup-tools
 
       - name: Setup Java
         uses: ./.github/actions/setup-java

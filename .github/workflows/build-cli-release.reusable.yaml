@@ -70,6 +70,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Tools
+        uses: ./.github/actions/setup-tools
+
       - name: Setup Rust
         uses: ./.github/actions/setup-rust
         with:

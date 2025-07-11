@@ -7,6 +7,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@baml/ui/tooltip';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@baml/ui/alert-dialog';
 import { AlertTriangle, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { escapeValue, unescapeValue, REQUIRED_ENV_VAR_UNSET_WARNING } from './utils';
 import type { ApiKeyEntry } from './atoms';
@@ -34,6 +45,10 @@ export const ApiKeyListItem: React.FC<ApiKeyListItemProps> = ({
       [key]: !prev[key],
     }));
   }, [setVisibility]);
+
+  const handleDelete = useCallback(() => {
+    deleteApiKey(apiKey.key);
+  }, [apiKey.key, deleteApiKey]);
 
   console.log('ApiKeyListItem: apiKey:', apiKey);
 
@@ -92,14 +107,31 @@ export const ApiKeyListItem: React.FC<ApiKeyListItemProps> = ({
           </Button>
         </div>
       </div>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="p-1 h-8 w-8 flex-shrink-0"
-        onClick={() => deleteApiKey(apiKey.key)}
-      >
-        <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
-      </Button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="p-1 h-8 w-8 flex-shrink-0"
+          >
+            <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete API Key</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the API key "{apiKey.key}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -11,9 +11,13 @@
     "ignore": [
       ".next",
       "dist",
+      "**/dist/**",
       "build",
+      "**/build/**",
       "bin",
+      "**/bin/**",
       "node_modules",
+      "**/node_modules/**",
       "**/baml_client/**",
       "**/generated/**",
       "**/target/**",
@@ -21,7 +25,11 @@
       "**/coverage/**",
       "engine/**",
       "integ-tests/**",
-      "typescript/**"
+      "typescript/**",
+      "tools/**",
+      "patches/**",
+      "jetbrains/**",
+      "pnpm-lock.yaml"
     ]
   },
   "json": {

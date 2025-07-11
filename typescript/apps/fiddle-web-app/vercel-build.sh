@@ -2,58 +2,38 @@
 set -x
 set -e
 
-# Install Rust 1.85.0 if not present or wrong version
-if ! command -v rustc &> /dev/null || [[ $(rustc --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+') != "1.85.0" ]]; then
-    echo "Installing Rust 1.85.0..."
-    curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain 1.85.0
-    source $HOME/.cargo/env
+# Install mise if not present
+if ! command -v mise &> /dev/null; then
+    echo "Installing mise..."
+    curl https://mise.run | sh
+    export PATH="$HOME/.local/bin:$PATH"
 fi
 
-# Install Go 1.23 if not present or wrong version
-if ! command -v go &> /dev/null || [[ $(go version | grep -oE 'go[0-9]+\.[0-9]+') != "go1.23" ]]; then
-    echo "Installing Go 1.23.11..."
-    curl -LO https://go.dev/dl/go1.23.11.linux-amd64.tar.gz
-    rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.11.linux-amd64.tar.gz
-    export PATH="/usr/local/go/bin:$PATH"
-fi
+# Navigate to the root directory where mise.toml is located
+cd ../../../
 
-# Ensure Go is in PATH
-export PATH="/usr/local/go/bin:$PATH"
+# Install all tools defined in mise.toml
+echo "Installing tools with mise..."
+mise install
 
+# Activate mise environment
+eval "$(mise activate bash)"
+
+# Verify installations
 echo "Go version: $(go version)"
 echo "Rust version: $(rustc --version)"
 
-# Install Rust tools
-cargo install wasm-pack --version 0.13.1 || true
-cargo install cross || true
+# The tools should already be installed via mise, but ensure cargo tools are available
+which wasm-pack || mise run cargo install wasm-pack --version 0.13.1
+which cross || mise run cargo install cross
 
-# Install Go tools
-export GOPATH="$HOME/go"
-export PATH="$GOPATH/bin:$PATH"
-go install golang.org/x/tools/cmd/goimports@latest
-# Install protoc-gen-go (using aqua style version)
-go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.6
+# Ensure mise environment is properly activated and paths are set
+export PATH="$HOME/.local/share/mise/shims:$PATH"
 
-# Try to source cargo environment from multiple possible locations
-if [ -f "$HOME/.cargo/env" ]; then
-    source $HOME/.cargo/env
-elif [ -f "/vercel/.cargo/env" ]; then
-    source /vercel/.cargo/env
-elif [ -f "$(eval echo ~$(whoami))/.cargo/env" ]; then
-    source "$(eval echo ~$(whoami))/.cargo/env"
+# mise should handle all the path setup for us, but let's ensure cargo is in PATH
+if [ -d "$HOME/.cargo/bin" ]; then
+    export PATH="$HOME/.cargo/bin:$PATH"
 fi
-
-# Ensure PATH includes cargo
-export PATH="$HOME/.cargo/bin:/vercel/.cargo/bin:$(eval echo ~$(whoami))/.cargo/bin:$PATH"
-
-# Ensure rustup has a default toolchain configured
-if ! rustup show active-toolchain &> /dev/null; then
-    echo "Setting up default Rust toolchain..."
-    rustup default stable
-fi
-# clang --version
-#llvm-config --version
-# g++ --version
 
 # System dependencies (still needed)
 dnf install -y llvm
@@ -61,14 +41,18 @@ DNF_EXIT_CODE=$?
 dnf install -y clang
 DNF_EXIT_CODE2=$?
 
-cd ../../../engine/baml-schema-wasm
+# Now navigate to the baml-schema-wasm directory for building
+cd engine/baml-schema-wasm
 export OPENSSL_NO_VENDOR=1
-# cargo install
-rustup target add wasm32-unknown-unknown
 
+# Add wasm target using mise's rust
+mise exec -- rustup target add wasm32-unknown-unknown
+
+# Go back to root directory
 cd ../../
 
-pnpm build:fiddle-web-app
+# Run the build
+mise exec -- pnpm build:fiddle-web-app
 
 ls -l
 ls -l /vercel/output

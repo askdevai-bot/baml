@@ -146,6 +146,8 @@ jobs:
       - name: Test Generators
         run: |
           pnpm generate || (echo "::error:: merge canary and run codegen again" && exit 1)
+        env:
+          TARGET: wasm32-unknown-unknown
 
       - name: Ensure No Changes
         run: |

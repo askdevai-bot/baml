@@ -7,11 +7,11 @@
     "baml-cli": "./dist/baml-cli"
   },
   "scripts": {
-    "dev": "mise x -- cargo build && pnpm run copy:debug",
+    "dev": "mise x -- cargo build ${TARGET:+--target=$TARGET} && pnpm run copy:debug",
     "clean": "git clean -xdf .turbo node_modules target",
-    "copy:debug": "mkdir -p dist && cp ../target/debug/baml-cli dist/baml-cli",
-    "copy:release": "mkdir -p dist && cp ../target/release/baml-cli dist/baml-cli",
-    "build": "mise x -- cargo build && pnpm run copy:debug",
-    "release": "mise x -- cargo build --release && pnpm run copy:release"
+    "copy:debug": "mkdir -p dist && cp ../target/${TARGET:+$TARGET/}debug/baml-cli dist/baml-cli",
+    "copy:release": "mkdir -p dist && cp ../target/${TARGET:+$TARGET/}release/baml-cli dist/baml-cli",
+    "build": "mise x -- cargo build ${TARGET:+--target=$TARGET} && pnpm run copy:debug",
+    "release": "mise x -- cargo build --release ${TARGET:+--target=$TARGET} && pnpm run copy:release"
   }
 }

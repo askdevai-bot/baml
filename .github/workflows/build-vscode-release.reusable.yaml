@@ -197,6 +197,8 @@ jobs:
             echo "Running development build"
             pnpm run build:vscode
           fi
+        env:
+          TARGET: ${{ matrix.rust-target }}
 
       - name: Package VSCode Extension for ${{ matrix.code-target }}
         id: package

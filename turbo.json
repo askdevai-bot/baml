@@ -12,9 +12,7 @@
     "VERCEL",
     "VERCEL_ENV"
   ],
-  "globalEnv": [
-    "VSCODE_DEBUG_MODE"
-  ],
+  "globalEnv": ["VSCODE_DEBUG_MODE"],
   "globalDependencies": [
     "tsconfig.json",
     ".nvmrc",

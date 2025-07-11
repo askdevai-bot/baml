@@ -1,38 +1,38 @@
-name: 'Setup Go'
-description: 'Setup Go with optional protoc-gen-go'
+name: "Setup Go"
+description: "Setup Go with optional protoc-gen-go"
 
 inputs:
   go-version:
-    description: 'Go version to install'
+    description: "Go version to install"
     required: false
-    default: '1.24'
+    default: "1.23.11"
   install-protoc-gen-go:
-    description: 'Install protoc-gen-go'
+    description: "Install protoc-gen-go"
     required: false
-    default: 'true'
+    default: "true"
   cache:
-    description: 'Enable Go module caching'
+    description: "Enable Go module caching"
     required: false
-    default: 'true'
+    default: "true"
   install-goimports:
-    description: 'Install goimports'
+    description: "Install goimports"
     required: false
-    default: 'true'
+    default: "true"
   architecture:
-    description: 'Target architecture for Go (e.g., x64, x86, arm64)'
+    description: "Target architecture for Go (e.g., x64, x86, arm64)"
     required: false
-    default: ''
+    default: ""
   target-os:
-    description: 'Target OS for cross-compilation (e.g., linux, darwin, windows)'
+    description: "Target OS for cross-compilation (e.g., linux, darwin, windows)"
     required: false
-    default: ''
+    default: ""
   target-arch:
-    description: 'Target architecture for cross-compilation (e.g., amd64, arm64, 386)'
+    description: "Target architecture for cross-compilation (e.g., amd64, arm64, 386)"
     required: false
-    default: ''
+    default: ""
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Setup Go
       uses: actions/setup-go@v5

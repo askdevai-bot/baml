@@ -12,7 +12,7 @@ fi
 # Install Go 1.23 if not present or wrong version
 if ! command -v go &> /dev/null || [[ $(go version | grep -oE 'go[0-9]+\.[0-9]+') != "go1.23" ]]; then
     echo "Installing Go 1.23..."
-    wget https://go.dev/dl/go1.23.linux-amd64.tar.gz
+    curl -LO https://go.dev/dl/go1.23.linux-amd64.tar.gz
     rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.linux-amd64.tar.gz
     export PATH="/usr/local/go/bin:$PATH"
 fi

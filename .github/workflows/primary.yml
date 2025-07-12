@@ -78,7 +78,10 @@ jobs:
 
       - name: Run Rust format check
         if: matrix.check == 'rust-format'
-        run: cargo fmt --check
+        run: |
+          # Ensure rustfmt is installed for the mise-managed toolchain
+          rustup component add rustfmt || true
+          cargo fmt --check
         working-directory: engine
 
       - name: Run Rust lint (Clippy)

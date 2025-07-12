@@ -1,48 +1,63 @@
-name: 'Setup Rust'
-description: 'Setup Rust toolchain with caching and optional WASM support'
+name: "Setup Rust"
+description: "Setup Rust toolchain with caching and optional WASM support"
 
 inputs:
   toolchain:
-    description: 'Rust toolchain version'
+    description: "Rust toolchain version"
     required: false
-    default: 'stable'
+    default: "stable"
   enable-wasm:
-    description: 'Enable WASM support (adds wasm32-unknown-unknown target and wasm-pack)'
+    description: "Enable WASM support (adds wasm32-unknown-unknown target and wasm-pack)"
     required: false
-    default: 'false'
+    default: "false"
   wasm-pack-version:
-    description: 'wasm-pack version to install (only used when enable-wasm is true)'
+    description: "wasm-pack version to install (only used when enable-wasm is true)"
     required: false
-    default: '0.13.1'
+    default: "0.13.1"
   enable-cross:
-    description: 'Enable cross-rs for cross-compilation'
+    description: "Enable cross-rs for cross-compilation"
     required: false
-    default: 'true'
+    default: "true"
   targets:
-    description: 'Additional Rust targets to install (space-separated)'
+    description: "Additional Rust targets to install (space-separated)"
     required: false
-    default: ''
+    default: ""
   workspace:
-    description: 'Workspace path for Rust cache'
+    description: "Workspace path for Rust cache"
     required: false
-    default: 'engine'
+    default: "engine"
   prefix-key:
-    description: 'Cache key prefix for Rust cache'
+    description: "Cache key prefix for Rust cache"
     required: false
-    default: ''
+    default: ""
   cache-on-failure:
-    description: 'Cache even if the workflow fails'
+    description: "Cache even if the workflow fails"
     required: false
-    default: 'false'
+    default: "false"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
+    # Check if Rust is already installed by mise
+    - name: Check for mise Rust installation
+      id: check-rust
+      run: |
+        if command -v rustc &> /dev/null; then
+          echo "rust-installed=true" >> $GITHUB_OUTPUT
+          echo "Rust is already installed by mise"
+          rustc --version
+        else
+          echo "rust-installed=false" >> $GITHUB_OUTPUT
+        fi
+      shell: bash
+
     - name: Setup Rust toolchain
+      if: steps.check-rust.outputs.rust-installed != 'true'
       uses: dtolnay/rust-toolchain@stable
       with:
         toolchain: ${{ inputs.toolchain }}
         targets: ${{ inputs.targets }}
+        components: rustfmt
 
     - name: Setup Rust cache
       uses: Swatinem/rust-cache@v2
@@ -50,6 +65,14 @@ runs:
         workspaces: ${{ inputs.workspace }}
         prefix-key: ${{ inputs.prefix-key }}
         cache-on-failure: ${{ inputs.cache-on-failure }}
+
+    - name: Install rustfmt component
+      run: |
+        # Get the active toolchain
+        TOOLCHAIN=$(rustup show active-toolchain | awk '{print $1}')
+        echo "Installing rustfmt for toolchain: $TOOLCHAIN"
+        rustup component add rustfmt --toolchain $TOOLCHAIN
+      shell: bash
 
     - name: Add wasm32 target
       if: inputs.enable-wasm == 'true'

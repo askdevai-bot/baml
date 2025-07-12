@@ -2,6 +2,10 @@
 set -x
 set -e
 
+# Set locale to avoid warnings
+export LC_ALL=C
+export LANG=C
+
 # Install mise if not present
 if ! command -v mise &> /dev/null; then
     echo "Installing mise..."
@@ -11,6 +15,13 @@ fi
 
 # Navigate to the root directory where mise.toml is located
 cd ../../../
+
+# Install system dependencies before running mise install
+echo "Installing system dependencies..."
+# Install dependencies for Ruby compilation
+dnf install -y gcc make readline-devel zlib-devel openssl-devel libyaml-devel
+# Install dependencies for Rust/WASM compilation
+dnf install -y llvm clang
 
 # Install all tools defined in mise.toml
 echo "Installing tools with mise..."
@@ -34,12 +45,6 @@ export PATH="$HOME/.local/share/mise/shims:$PATH"
 if [ -d "$HOME/.cargo/bin" ]; then
     export PATH="$HOME/.cargo/bin:$PATH"
 fi
-
-# System dependencies (still needed)
-dnf install -y llvm
-DNF_EXIT_CODE=$?
-dnf install -y clang
-DNF_EXIT_CODE2=$?
 
 # Now navigate to the baml-schema-wasm directory for building
 cd engine/baml-schema-wasm

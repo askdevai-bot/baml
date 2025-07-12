@@ -74,6 +74,14 @@ runs:
         rustup component add rustfmt --toolchain $TOOLCHAIN
       shell: bash
 
+    - name: Install clippy component
+      run: |
+        # Get the active toolchain
+        TOOLCHAIN=$(rustup show active-toolchain | awk '{print $1}')
+        echo "Installing clippy for toolchain: $TOOLCHAIN"
+        rustup component add clippy --toolchain $TOOLCHAIN
+      shell: bash
+
     - name: Add wasm32 target
       if: inputs.enable-wasm == 'true'
       run: rustup target add wasm32-unknown-unknown
